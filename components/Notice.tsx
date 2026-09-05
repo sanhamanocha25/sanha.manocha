@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { bioParagraphs, codeGloss, noticeHighlights, whereThisLeads } from "@/content/site";
+import { bioParagraphs, codeGloss, currentlyCurious, noticeHighlights, whereThisLeads } from "@/content/site";
 import { StateBand } from "@/components/StateBand";
 import { Sheet } from "@/components/Sheet";
 import { Gloss } from "@/components/Gloss";
@@ -130,6 +130,18 @@ export function Notice() {
                 );
               })}
             </ul>
+            {currentlyCurious.length ? (
+              <div className="mt-8">
+                <p className="mono mb-3 text-[0.7rem] text-pencil-light">currently curious about</p>
+                <ul className="body-serif space-y-1 text-[0.95rem]">
+                  {currentlyCurious.map((c) => (
+                    <li key={c} className="border-l border-ink pl-3">
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         }
       >

@@ -175,7 +175,6 @@ export const connect = {
   code: "x",
   tag: "get in touch",
   heading: "Connect",
-  text: "Always glad to talk about consumer behaviour, behavioural economics, or a half-formed idea for a tool.",
   links: [
     { label: "sanha.manocha@yahoo.com", href: "mailto:sanha.manocha@yahoo.com", external: false },
     { label: "linkedin.com/in/sanha-manocha", href: "https://linkedin.com/in/sanha-manocha", external: true },
@@ -190,27 +189,82 @@ export const connect = {
 /** Hero. Rewritten; edit freely. */
 export const hero = {
   eyebrow: "i. an opening note",
-  headline: "I want to know why people buy what they buy. Consumer research is how I find out, and experimenting with new ways to ask is the part I enjoy most.",
-  sub: "Consumer and market insights researcher, trained as a behavioural economist. Most of my week is qualitative and quantitative research for a D2C beauty brand. The rest goes on small experiments in how research itself could work better.",
+  headline:
+    "I'm a curious person. I study why people buy, believe and behave the way they do, and I keep experimenting with new ways to ask.",
+  sub:
+    "Consumer and market insights researcher. Behavioural economist by training. Constant learner by temperament: if there is a new method, tool or idea, I want to try it. Most weeks that means qualitative and quantitative research for a D2C beauty brand, plus small experiments, built with Claude Code, in how research itself could work better.",
   facts: heroFacts,
 };
+
+/**
+ * The hero summary. Keywords drift across the opening screen, then fly into
+ * their places in these sentences. Wrap a keyword in [[double brackets]] to
+ * make it a tag; each sentence belongs to one state, which decides how its
+ * tags are marked. Keep tags short; they are drawn on a canvas first.
+ */
+export const heroSummary: { code: "notice" | "question" | "test"; text: string }[] = [
+  {
+    code: "notice",
+    text: "I want to know [[why people buy]] and [[why they believe what they believe]], so I go and look: [[in-home visits]], [[in-depth interviews]], [[focus groups]], watching [[how people actually live]].",
+  },
+  {
+    code: "question",
+    text: "Then I check it properly: [[40+ quantitative studies a year]] across [[a 10+ category portfolio]], from [[usage and attitude studies]] and [[brand tracking]] to [[conjoint and pricing research]], and I say so when there is [[no significant lift]].",
+  },
+  {
+    code: "test",
+    text: "And when the right tool doesn't exist, I try something: [[a colour wheel instead of a swatch list]], [[feedback read as it arrives]], [[an LLM primed with a consumer persona]], [[a survey platform, from scratch]]. Most of it built with Claude Code.",
+  },
+];
+
+/** One line above the summary, explaining what the reader is looking at. */
+export const heroNote =
+  "This site is laid out like my field notes: what I notice, what I question, what I test. The tags are the highlights.";
+
+/**
+ * Extra fragments that drift in the opening field but don't make it into the
+ * summary. They fade as the sort happens, the way most observations do.
+ */
+export const heroExtras: { text: string; code: "notice" | "question" | "test" }[] = [
+  { text: "a stubborn curiosity", code: "notice" },
+  { text: "price transparency and fairness", code: "notice" },
+  { text: "how framing changes a choice", code: "notice" },
+  { text: "what customers are actually saying", code: "notice" },
+  { text: "an anthropologist's habit of watching", code: "notice" },
+  { text: "concept and claims tests", code: "question" },
+  { text: "barrier and lapser studies", code: "question" },
+  { text: "Van Westendorp", code: "question" },
+  { text: "Gabor-Granger", code: "question" },
+  { text: "head-to-head against the category leader", code: "question" },
+  { text: "a randomised controlled trial, n=78", code: "question" },
+  { text: "research across 7 regions", code: "question" },
+  { text: "99% accuracy on ₹375Cr+ a month", code: "question" },
+  { text: "thematic coding", code: "question" },
+  { text: "a monthly briefing to the CEO and CMO", code: "question" },
+  { text: "confetti when the survey ends", code: "test" },
+  { text: "fifteen concepts screened down to five", code: "test" },
+  { text: "an A/B testing framework", code: "test" },
+  { text: "gamified app interventions", code: "test" },
+  { text: "a peer-comparison tool", code: "test" },
+  { text: "automating the tedious parts", code: "test" },
+];
 
 /** The three states of a research mind. `gloss` is the plain-language line. */
 export const states = {
   notice: {
     word: "Notice",
     number: "01",
-    gloss: "paying attention to how people actually behave, and asking why",
+    gloss: "I pay attention to how people actually behave, and I want to know why.",
   },
   question: {
     word: "Question",
     number: "02",
-    gloss: "interviews, focus groups, surveys and pricing studies: qualitative and quantitative, designed and analysed properly",
+    gloss: "Then I check it properly. Interviews, focus groups, surveys, pricing studies: qualitative and quantitative, both.",
   },
   test: {
     word: "Test",
     number: "03",
-    gloss: "small experiments in how research itself could work better, built when the right tool didn't exist",
+    gloss: "And when the right tool doesn't exist, I build a rough one with Claude Code and try it. That part is fun.",
   },
 } as const;
 
@@ -224,7 +278,13 @@ export const nav = [
 
 /** NEW: the closing sentence of the bio. Appended as the third paragraph. */
 export const whereThisLeads =
-  "Research is what I want to keep doing. Where exactly it leads, I'm still working out.";
+  "I like learning new things more than I like being comfortable with old ones. Research is what I want to keep doing. Where exactly it leads, I'm still working out.";
+
+/**
+ * Things you are currently curious about or learning. Shown in the NOTICE
+ * margin when non-empty. One short phrase per line. Leave empty to hide.
+ */
+export const currentlyCurious: string[] = [];
 
 /**
  * Phrases in the bio that get a highlighter stroke and a margin code.
@@ -238,6 +298,7 @@ export const noticeHighlights = [
   { phrase: "behavioural economics", code: "TRAINING" },
   { phrase: "why people do what they do", code: "MOTIVE" },
   { phrase: "build a small tool to test a theory", code: "INSTRUMENT" },
+  { phrase: "learning new things", code: "LEARNER" },
   { phrase: "still working out", code: "OPEN" },
 ];
 
@@ -249,6 +310,7 @@ export const codeGloss: Record<string, string> = {
   TRAINING: "where the way of thinking comes from",
   MOTIVE: "the question under everything else",
   INSTRUMENT: "tools are a means to the question, not the point",
+  LEARNER: "new method, new tool, new idea: I want to try it",
   OPEN: "an unknown, left open on purpose",
 };
 
@@ -374,7 +436,7 @@ export const questionLabels = {
   panelTitle: "the role, plotted",
   panelHint: "every mark here is a number or a name taken from the statements alongside",
   provenanceTitle: "where the rigour came from",
-  provenanceNote: "the MSc and the earlier roles are plotted on the axis, by year and by month; everything else is on file below",
+  provenanceNote: "the MSc is plotted by year and the roles by month; everything else is on file below",
   instruments: "instruments",
   onRecord: "on the record",
   training: "training",
@@ -401,7 +463,7 @@ export const benchLabels = {
   why: "why",
   did: "what I did",
   result: "what came of it",
-  lede: "Small experiments. Most of them started because a research question was waiting on a tool that didn't exist, or was too slow.",
+  lede: "Small experiments, built with Claude Code. Every one started the same way: I got curious about whether something could work, and the tool I needed either didn't exist or was too slow.",
   illustration: "Illustration with abstract marks. Not real data.",
 };
 
@@ -506,6 +568,13 @@ export const wheelLabels = {
   value: "brightness",
 };
 
+/** Connect. Edit freely. */
+export const connectText =
+  "Always glad to talk about consumer behaviour, behavioural economics, or honestly anything under the sun. I like to talk, and I like being surprised by what people know.";
+
+/** Footer credit line. */
+export const colophon = "Designed and built by me, with Claude Code.";
+
 /* ── Field notes ─────────────────────────────────────────────────────────── */
 
 export type Post = {
@@ -541,59 +610,3 @@ export const writing = {
    */
   posts: [] as Post[],
 };
-
-/**
- * Hero fragments: short keywords that drift across the opening screen and
- * then sort into the three states. `heroSummary` is the one-line reading of
- * each group, shown above it once the sort completes, so the keywords add up
- * to a person rather than a word cloud.
- */
-export const heroSummary: Record<"notice" | "question" | "test", string> = {
-  notice: "what I pay attention to: why people buy, believe and behave the way they do, and how they actually live",
-  question: "how I check it: interviews and focus groups on one side, 40+ quantitative studies a year on the other",
-  test: "what I try when the right tool doesn't exist: small experiments, most of them built by hand",
-};
-
-export const heroFragments: { text: string; code: "notice" | "question" | "test" }[] = [
-  { text: "why people buy", code: "notice" },
-  { text: "why people believe what they believe", code: "notice" },
-  { text: "how people actually live", code: "notice" },
-  { text: "in-home visits", code: "notice" },
-  { text: "in-depth interviews", code: "notice" },
-  { text: "focus groups", code: "notice" },
-  { text: "a stubborn curiosity", code: "notice" },
-  { text: "price transparency and fairness", code: "notice" },
-  { text: "how framing changes a choice", code: "notice" },
-  { text: "what customers are actually saying", code: "notice" },
-  { text: "human understanding, then product concepts", code: "notice" },
-  { text: "an anthropologist's habit of watching", code: "notice" },
-  { text: "40+ quantitative studies a year", code: "question" },
-  { text: "a 10+ category portfolio", code: "question" },
-  { text: "usage and attitude studies", code: "question" },
-  { text: "concept and claims tests", code: "question" },
-  { text: "barrier and lapser studies", code: "question" },
-  { text: "brand tracking", code: "question" },
-  { text: "conjoint and pricing research", code: "question" },
-  { text: "Van Westendorp", code: "question" },
-  { text: "Gabor-Granger", code: "question" },
-  { text: "head-to-head against the category leader", code: "question" },
-  { text: "no significant lift, so we said so", code: "question" },
-  { text: "a randomised controlled trial, n=78", code: "question" },
-  { text: "research across 7 regions", code: "question" },
-  { text: "99% accuracy on ₹375Cr+ a month", code: "question" },
-  { text: "thematic coding", code: "question" },
-  { text: "significance testing", code: "question" },
-  { text: "a monthly briefing to the CEO and CMO", code: "question" },
-  { text: "a colour wheel instead of a swatch list", code: "test" },
-  { text: "feedback read as it arrives", code: "test" },
-  { text: "confetti when the survey ends", code: "test" },
-  { text: "an LLM primed with a consumer persona", code: "test" },
-  { text: "fifteen concepts screened down to five", code: "test" },
-  { text: "a survey platform, from scratch", code: "test" },
-  { text: "an A/B testing framework", code: "test" },
-  { text: "gamified app interventions", code: "test" },
-  { text: "a peer-comparison tool", code: "test" },
-  { text: "automating the tedious parts", code: "test" },
-  { text: "a small tool to test a theory", code: "test" },
-  { text: "built because the right tool didn't exist", code: "test" },
-];

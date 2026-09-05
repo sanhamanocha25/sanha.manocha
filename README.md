@@ -29,7 +29,7 @@ Components read from these arrays and adapt to however many items exist, so addi
 
 | Where | Field | What it does |
 | --- | --- | --- |
-| `heroFragments`, `heroSummary` | `text`, `code` | Keywords that drift across the hero and sort into notice / question / test, each group headed by its one-line summary |
+| `heroSummary`, `heroExtras`, `heroNote` | `text`, `code` | The hero summary sentences. Wrap a keyword in `[[double brackets]]` to make it a tag; tags drift across the opening screen and fly into place. `heroExtras` drift and fade. |
 | `noticeHighlights` | `phrase`, `code` | Phrases in the bio that get a highlighter stroke and margin code. Must match the text exactly |
 | `codeGloss` | — | Plain-language meaning of each margin code, shown on hover or tap |
 | `glossary` | — | Research terms found in the text, with a one-line gloss. Matched exactly, case-sensitive |

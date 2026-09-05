@@ -1,4 +1,4 @@
-import { meta } from "@/content/site";
+import { colophon, meta } from "@/content/site";
 
 export function Footer() {
   return (
@@ -6,7 +6,7 @@ export function Footer() {
       <div className="rule" />
       <div className="mono flex flex-wrap items-baseline justify-between gap-3 pt-5 text-[0.75rem] text-pencil">
         <span>{meta.footer}</span>
-        <span aria-hidden>end of transcript</span>
+        <span>{colophon}</span>
       </div>
     </footer>
   );

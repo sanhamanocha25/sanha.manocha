@@ -3,20 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { meta, nav, states } from "@/content/site";
-
-const STATE_IDS = ["notice", "question", "test"] as const;
+import { meta, nav } from "@/content/site";
 
 export function Masthead() {
   const pathname = usePathname();
   const [active, setActive] = useState<string>("");
 
-  // Track which section is in view so the nav and state strip mark it.
   useEffect(() => {
     if (pathname !== "/") return;
-    const ids = [
-      ...nav.map((n) => n.href).filter((h) => h.startsWith("/#")).map((h) => h.slice(2)),
-    ];
+    const ids = nav.map((n) => n.href).filter((h) => h.startsWith("/#")).map((h) => h.slice(2));
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (!els.length) return;
     const io = new IntersectionObserver(
@@ -37,46 +32,21 @@ export function Masthead() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink bg-paper/95 backdrop-blur-[2px]">
       <div className="mx-auto flex max-w-[84rem] items-center justify-between gap-6 px-[var(--gutter)] py-3">
-        <Link
-          href="/"
-          className="display-tight shrink-0 whitespace-nowrap text-[1.05rem] no-underline"
-          aria-label={`${meta.name} — home`}
-        >
+        <Link href="/" className="display-tight shrink-0 whitespace-nowrap text-[1.05rem] no-underline" aria-label={`${meta.name} — home`}>
           {meta.name}
         </Link>
-
-        {/* State strip — which of the three minds is on screen */}
-        {isHome ? (
-          <ol aria-label="Current state" className="mono hidden items-center gap-1 text-[0.7rem] text-pencil md:flex">
-            {STATE_IDS.map((id, i) => (
-              <li key={id} className="flex items-center gap-1">
-                <span
-                  className={`px-1.5 py-0.5 transition-colors duration-300 ${
-                    active === id ? "bg-marker text-ink" : ""
-                  }`}
-                >
-                  {states[id].word.toLowerCase()}
-                </span>
-                {i < STATE_IDS.length - 1 ? <span aria-hidden>·</span> : null}
-              </li>
-            ))}
-          </ol>
-        ) : null}
-
         <nav aria-label="Site" className="no-scrollbar -mr-[var(--gutter)] overflow-x-auto pr-[var(--gutter)]">
-          <ul className="mono flex items-center gap-x-5 text-[0.78rem] leading-none">
+          <ul className="mono flex items-center gap-x-4 text-[0.78rem] leading-none">
             {nav.map((item) => {
               const isNotes = item.href === "/notes";
-              const current =
-                (isNotes && pathname.startsWith("/notes")) ||
-                (!isNotes && isHome && item.href === `/#${active}`);
+              const current = (isNotes && pathname.startsWith("/notes")) || (!isNotes && isHome && item.href === `/#${active}`);
               return (
                 <li key={item.href} className="shrink-0">
                   <Link
                     href={item.href}
                     aria-current={current ? "true" : undefined}
-                    className={`focus-marker inline-block py-2 no-underline transition-colors duration-200 ${
-                      current ? "text-ink underline decoration-marker decoration-[3px] underline-offset-4" : "text-pencil hover:text-ink"
+                    className={`focus-marker inline-block px-1.5 py-1.5 no-underline transition-colors duration-200 ${
+                      current ? "bg-marker text-ink" : "text-pencil hover:text-ink"
                     }`}
                   >
                     {item.label}

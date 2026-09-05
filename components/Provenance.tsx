@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { education, pathEntries, pathLede, questionLabels, recognition, toolkit } from "@/content/site";
 import { Stamp } from "@/components/Stamp";
 import { glossText } from "@/lib/gloss";
@@ -62,73 +62,54 @@ function useLanes(items: Plotted[]) {
 
 function TimeAxis({ reduced }: { reduced: boolean }) {
   const items = usePlotted();
-  const { lanes, min, max, laneCount } = useLanes(items);
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 90%", "end 50%"] });
-  const pathLength = useTransform(scrollYProgress, [0, 1], reduced ? [1, 1] : [0, 1]);
-  const W = 1000;
-  const laneH = 30;
-  const top = 20;
-  const axisY = top + laneCount * laneH + 6;
-  const H = axisY + 34;
+  const rows = useMemo(() => [...items].sort((a, b) => a.a - b.a || b.b - a.b), [items]);
+  const min = Math.min(...items.map((i) => i.a));
+  const max = Math.max(...items.map((i) => i.b));
   const span = max + 1 - min;
-  const x = (m: number) => ((m - min) / span) * W;
-  const ticks: { m: number; label: string }[] = [];
-  for (let m = min; m <= max; m++) if (m % 12 === 0) ticks.push({ m, label: String(m / 12) });
+  const pct = (m: number) => ((m - min) / span) * 100;
+  const years: number[] = [];
+  for (let m = min; m <= max; m++) if (m % 12 === 0) years.push(m);
+
+  const gridLines = years.map((m) => (
+    <span key={m} aria-hidden className="absolute bottom-0 top-0 border-l border-dashed border-pencil-light" style={{ left: `${pct(m)}%` }} />
+  ));
 
   return (
-    <div ref={ref} className="hidden md:block">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full overflow-visible" role="img" aria-label="Time axis of training and earlier roles">
-        <motion.line x1={0} y1={axisY} x2={W} y2={axisY} stroke="#15171b" strokeWidth={1.25} style={{ pathLength }} />
-        {ticks.map((t) => (
-          <g key={t.m}>
-            <line x1={x(t.m)} y1={axisY - 5} x2={x(t.m)} y2={axisY + 5} stroke="#15171b" strokeWidth={1} />
-            <text x={x(t.m) + 6} y={axisY + 20} className="mono" fontSize={11} fill="#6f756d">
-              {t.label}
-            </text>
-          </g>
-        ))}
-        {items.map((it, i) => {
-          const lane = lanes.get(it.key) ?? 0;
-          const y = top + lane * laneH;
-          const x0 = x(it.a);
-          const w = Math.max(6, x(it.b + 1) - x0);
-          // Labels on the right half anchor to the bar's end so nothing runs off the edge.
-          const anchorEnd = x0 + w / 2 > W * 0.55;
-          const isYear = it.kind === "year";
-          return (
-            <g key={it.key}>
-              <motion.rect
-                x={x0}
-                y={y + 12}
-                height={10}
-                fill={isYear ? "transparent" : "#dcff4f"}
-                stroke="#15171b"
-                strokeWidth={1}
-                strokeDasharray={isYear ? "3 3" : undefined}
-                initial={reduced ? false : { width: 0 }}
-                whileInView={{ width: w }}
-                viewport={{ once: true, margin: "0px 0px -15% 0px" }}
-                transition={{ duration: 0.7, ease: EASE, delay: 0.1 + i * 0.1 }}
+    <div role="img" aria-label="Time axis of training and earlier roles" className="border-t border-ink">
+      {/* year header */}
+      <div className="grid md:grid-cols-[20rem_minmax(0,1fr)] lg:grid-cols-[26rem_minmax(0,1fr)]">
+        <span className="mono hidden py-2 text-[0.68rem] text-pencil md:block">record</span>
+        <div className="relative h-7">
+          {years.map((m) => (
+            <span key={m} className="mono absolute top-1.5 -translate-x-1/2 text-[0.68rem] text-pencil" style={{ left: `${pct(m)}%` }}>
+              {m / 12}
+            </span>
+          ))}
+        </div>
+      </div>
+      {rows.map((it, i) => {
+        const left = pct(it.a);
+        const width = Math.max(0.8, pct(it.b + 1) - left);
+        const isYear = it.kind === "year";
+        return (
+          <div key={it.key} className="grid gap-x-6 border-t border-grid py-2.5 md:grid-cols-[20rem_minmax(0,1fr)] lg:grid-cols-[26rem_minmax(0,1fr)] md:items-center">
+            <span className="mono text-[0.72rem] leading-[1.4] text-ink">
+              <span className="text-pencil">[{String(it.footnote).padStart(2, "0")}]</span> {it.label}
+            </span>
+            <div className="relative mt-1.5 h-4 md:mt-0">
+              {gridLines}
+              <motion.span
+                className={`absolute top-0.5 h-3 origin-left ${isYear ? "border border-dashed border-ink bg-transparent" : "border border-ink bg-marker"}`}
+                style={{ left: `${left}%`, width: `${width}%` }}
+                initial={reduced ? false : { scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+                transition={{ duration: 0.7, ease: EASE, delay: 0.08 * i }}
               />
-              <motion.text
-                x={anchorEnd ? x0 + w : x0}
-                y={y + 7}
-                fontSize={11}
-                fill="#15171b"
-                textAnchor={anchorEnd ? "end" : "start"}
-                className="mono"
-                initial={reduced ? false : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
-              >
-                [{String(it.footnote).padStart(2, "0")}] {it.label}
-              </motion.text>
-            </g>
-          );
-        })}
-      </svg>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

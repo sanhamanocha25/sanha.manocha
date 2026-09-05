@@ -8,7 +8,8 @@ type Fragment = { text: string; code: string };
 type Item = {
   text: string;
   code: Code;
-  // drift home + oscillation
+  /** true when this fragment has a home in the written summary */
+  keep: boolean;
   hx: number;
   hy: number;
   amp: number;
@@ -16,24 +17,14 @@ type Item = {
   s2: number;
   ph: number;
   rot: number;
-  // sorted grid position
   gx: number;
   gy: number;
   w: number;
-  groupStart: boolean;
-  hidden: boolean;
 };
 
 const CODE_ORDER: Code[] = ["notice", "question", "test"];
-const COLORS = {
-  paper: "#f1f2ed",
-  ink: "#15171b",
-  pencil: "#6f756d",
-  marker: "#dcff4f",
-  markerDeep: "#c4ea2c",
-};
+const COLORS = { ink: "#15171b", pencil: "#6f756d", marker: "#dcff4f" };
 
-// Small deterministic PRNG so the field looks the same on every visit.
 function mulberry32(seed: number) {
   return () => {
     seed |= 0;
@@ -50,11 +41,10 @@ const smooth = (v: number) => {
 };
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-function hexToRgb(hex: string) {
+const hexToRgb = (hex: string) => {
   const n = parseInt(hex.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255] as const;
-}
+};
 const INK = hexToRgb(COLORS.ink);
 const PENCIL = hexToRgb(COLORS.pencil);
 
@@ -62,14 +52,23 @@ type Args = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   hostRef: RefObject<HTMLDivElement | null>;
   headlineRef: RefObject<HTMLDivElement | null>;
+  /** the written summary; its <mark data-frag> elements are the sort targets */
+  summaryRef: RefObject<HTMLDivElement | null>;
   statusRef: RefObject<HTMLParagraphElement | null>;
   progressRef: RefObject<number>;
+  /** fragments with a home in the summary */
   fragments: Fragment[];
-  summaries: Record<Code, string>;
+  /** fragments that drift but fade away on sort */
+  extras: Fragment[];
   reduced: boolean;
 };
 
-export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, summaries, reduced }: Args) {
+/**
+ * The opening field. Fragments drift like notes on a desk; the cursor snaps
+ * them to the graph paper; scrolling flies each one into its place in the
+ * written summary, where the HTML tags take over so the text is real text.
+ */
+export function useFieldCanvas({ canvasRef, hostRef, headlineRef, summaryRef, statusRef, progressRef, fragments, extras, reduced }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current;
     const host = hostRef.current;
@@ -83,47 +82,24 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     let H = 0;
     let dpr = 1;
     let fontSize = 12;
-    let fontFamily = "monospace";
-    let serifFamily = "serif";
+    let fontFamily = "ui-monospace, Menlo, monospace";
     let items: Item[] = [];
     let pointer: { x: number; y: number } | null = null;
     let lensR = 150;
     let raf = 0;
     let visible = true;
     let lastStatus = "";
-    let groupCounts: Record<Code, number> = { notice: 0, question: 0, test: 0 };
+    let lastVars = "";
+    let counts: Record<Code, number> = { notice: 0, question: 0, test: 0 };
 
     const readFont = () => {
       const fam = getComputedStyle(document.documentElement).getPropertyValue("--font-jetbrains").trim();
       fontFamily = fam ? `${fam}, ui-monospace, Menlo, monospace` : "ui-monospace, Menlo, monospace";
-      const ser = getComputedStyle(document.documentElement).getPropertyValue("--font-fraunces").trim();
-      serifFamily = ser ? `${ser}, Georgia, serif` : "Georgia, serif";
     };
 
-    const pickFragments = (): Fragment[] => {
-      const isMobile = W < 640;
-      const isTablet = W < 1024;
-      const target = isMobile ? 21 : isTablet ? 36 : fragments.length;
-      if (target >= fragments.length) return fragments;
-      // Take an even spread across codes: round-robin through the code buckets.
-      const buckets: Record<string, Fragment[]> = {};
-      fragments.forEach((f) => (buckets[f.code] ??= []).push(f));
-      const out: Fragment[] = [];
-      let i = 0;
-      while (out.length < target) {
-        let added = false;
-        for (const code of CODE_ORDER) {
-          const b = buckets[code];
-          if (b && b[i]) {
-            out.push(b[i]);
-            added = true;
-            if (out.length >= target) break;
-          }
-        }
-        if (!added) break;
-        i++;
-      }
-      return out;
+    const pickExtras = (): Fragment[] => {
+      const n = W < 640 ? 6 : W < 1024 ? 12 : extras.length;
+      return extras.slice(0, n);
     };
 
     const layout = () => {
@@ -140,21 +116,32 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
       const isMobile = W < 640;
       fontSize = isMobile ? 10.5 : W < 1024 ? 11.5 : 12.5;
       lensR = isMobile ? 110 : 150;
+      // The HTML tags must be set in exactly the same size as the canvas text.
+      host.style.setProperty("--frag", `${fontSize}px`);
+
       const gutter = Math.min(48, Math.max(20, W * 0.04));
       const rand = mulberry32(20241105);
-
-      // Headline exclusion zone (drift should not sit on top of the type).
       const hl = headlineRef.current?.getBoundingClientRect();
-      const ex = hl
-        ? { x: hl.left - rect.left - 24, y: hl.top - rect.top - 24, w: hl.width + 48, h: hl.height + 48 }
-        : null;
+      const ex = hl ? { x: hl.left - rect.left - 24, y: hl.top - rect.top - 24, w: hl.width + 48, h: hl.height + 48 } : null;
 
-      const chosen = pickFragments();
+      // Targets: the <mark> elements of the written summary.
+      const targets = new Map<string, { x: number; y: number; w: number }>();
+      summaryRef.current?.querySelectorAll<HTMLElement>("mark[data-frag]").forEach((m) => {
+        const r = m.getBoundingClientRect();
+        targets.set(m.dataset.frag ?? "", { x: r.left - rect.left, y: r.top - rect.top + r.height / 2, w: r.width });
+      });
+
+      const all: (Fragment & { keep: boolean })[] = [
+        ...fragments.map((f) => ({ ...f, keep: true })),
+        ...pickExtras().map((f) => ({ ...f, keep: false })),
+      ];
+
       ctx.font = `${fontSize}px ${fontFamily}`;
       const placed: { x: number; y: number; w: number; h: number }[] = [];
       const rowGap = fontSize + 18;
-      items = chosen.map((f) => {
-        // rejection-sample a home outside the headline box and clear of other notes
+      counts = { notice: 0, question: 0, test: 0 };
+      items = all.map((f) => {
+        const code = (CODE_ORDER.includes(f.code as Code) ? f.code : "notice") as Code;
         const tw = Math.ceil(ctx.measureText(f.text).width) + 12;
         let hx = 0;
         let hy = 0;
@@ -181,9 +168,12 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
           hy = best.y;
         }
         placed.push({ x: hx, y: hy, w: tw, h: rowGap });
+        const t = f.keep ? targets.get(f.text) : undefined;
+        if (f.keep && t) counts[code]++;
         return {
           text: f.text,
-          code: (CODE_ORDER.includes(f.code as Code) ? f.code : "notice") as Code,
+          code,
+          keep: Boolean(f.keep && t),
           hx,
           hy,
           amp: 6 + rand() * 10,
@@ -191,71 +181,11 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
           s2: 0.1 + rand() * 0.16,
           ph: rand() * Math.PI * 2,
           rot: (rand() - 0.5) * 0.22,
-          gx: 0,
-          gy: 0,
-          w: 0,
-          groupStart: false,
-          hidden: false,
+          gx: t?.x ?? hx,
+          gy: t?.y ?? hy,
+          w: t?.w ?? tw,
         };
       });
-
-      // Sort into the coded matrix: grouped by code, flowing left→right.
-      items.sort((a, b) => CODE_ORDER.indexOf(a.code) - CODE_ORDER.indexOf(b.code));
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      const padX = 6;
-      const gap = isMobile ? 8 : 12;
-      const rowH = fontSize + (isMobile ? 9 : 13);
-      const headlineBottom = hl ? hl.bottom - rect.top : 0;
-      const bandTop = Math.max(H * (isMobile ? 0.62 : 0.58), headlineBottom + (isMobile ? 20 : 44));
-      const bandBottom = H - (isMobile ? 44 : 52);
-      const maxRows = Math.max(1, Math.floor((bandBottom - bandTop) / rowH));
-
-      const place = () => {
-        groupCounts = { notice: 0, question: 0, test: 0 };
-        let x = gutter;
-        let row = 0;
-        let cur: Code | null = null;
-        for (const it of items) {
-          if (it.hidden) continue;
-          it.w = Math.ceil(ctx.measureText(it.text).width) + padX * 2;
-          it.groupStart = false;
-          if (it.code !== cur) {
-            if (cur !== null) row++;
-            row++; // a row for the group's one-line summary
-            cur = it.code;
-            x = gutter;
-            it.groupStart = true;
-            const label = `${it.code} ×00`;
-            x += Math.ceil(ctx.measureText(label).width) + gap + 8;
-          }
-          if (x + it.w > W - gutter) {
-            row++;
-            x = gutter;
-          }
-          it.gx = x;
-          it.gy = row;
-          x += it.w + gap;
-          groupCounts[it.code]++;
-        }
-        return row + 1;
-      };
-
-      let rows = place();
-      // If the matrix won't fit the band, drop items from the longest group until it does.
-      let guard = 0;
-      while (rows > maxRows && guard++ < items.length) {
-        const visibleItems = items.filter((i) => !i.hidden);
-        if (visibleItems.length <= 4) break;
-        const longest = CODE_ORDER.reduce((a, b) => (groupCounts[a] >= groupCounts[b] ? a : b));
-        const idx = items.map((i) => (!i.hidden && i.code === longest ? 1 : 0)).lastIndexOf(1);
-        if (idx < 0) break;
-        items[idx].hidden = true;
-        rows = place();
-      }
-      // Centre the finished matrix inside the band below the headline.
-      const usedH = rows * rowH;
-      const top = Math.max(bandTop, bandTop + (bandBottom - bandTop - usedH) / 2);
-      for (const it of items) it.gy = top + it.gy * rowH + rowH * 0.5;
     };
 
     const setStatus = (s: string) => {
@@ -264,115 +194,93 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
         lastStatus = s;
       }
     };
+    const setVars = (words: number, marks: number) => {
+      const key = `${words.toFixed(2)}|${marks}`;
+      if (key === lastVars) return;
+      lastVars = key;
+      host.style.setProperty("--words", words.toFixed(2));
+      host.style.setProperty("--marks", String(marks));
+    };
+
+    const drawMark = (code: Code, w: number, h: number, alpha: number) => {
+      ctx.globalAlpha = alpha;
+      if (code === "notice") {
+        ctx.fillStyle = COLORS.marker;
+        ctx.fillRect(0, -h / 2, w, h);
+      } else if (code === "question") {
+        ctx.strokeStyle = COLORS.ink;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0.5, -h / 2 + 0.5, w - 1, h - 1);
+      } else {
+        ctx.strokeStyle = COLORS.ink;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.moveTo(0, h / 2 - 1);
+        ctx.lineTo(w, h / 2 - 1);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.globalAlpha = 1;
+    };
 
     const draw = (now: number) => {
       const time = now / 1000;
-      const p = easeInOut(clamp01(progressRef.current ?? 0));
+      const raw = clamp01(progressRef.current ?? 0);
+      const p = easeInOut(raw);
+      const swapped = raw >= 0.985;
       ctx.clearRect(0, 0, W, H);
       ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textBaseline = "middle";
-
-      const total = items.filter((i) => !i.hidden).length;
       let inLens = 0;
 
       for (const it of items) {
-        if (it.hidden) continue;
+        if (it.keep && swapped) continue; // the HTML tag has taken over
         const dx = it.hx + Math.sin(time * it.s1 + it.ph) * it.amp;
         const dy = it.hy + Math.cos(time * it.s2 + it.ph * 1.7) * it.amp * 0.7;
-
-        // Lens influence: fragments under the lens snap to the graph paper.
         let li = 0;
-        if (pointer) {
+        if (pointer && p < 0.5) {
           const d = Math.hypot(dx - pointer.x, dy - pointer.y);
           li = 1 - smooth((d - lensR * 0.45) / (lensR * 0.55));
           if (li > 0.5) inLens++;
         }
         const sx = Math.round(dx / GRID) * GRID + 4;
         const sy = Math.round(dy / GRID) * GRID - fontSize * 0.55;
-
         const lx = lerp(dx, sx, li);
         const ly = lerp(dy, sy, li);
-        const x = lerp(lx, it.gx, p);
-        const y = lerp(ly, it.gy, p);
-        const k = Math.max(p, li);
 
+        let x: number, y: number, k: number, alpha: number;
+        if (it.keep) {
+          x = lerp(lx, it.gx, p);
+          y = lerp(ly, it.gy, p);
+          k = Math.max(p, li);
+          alpha = lerp(0.5, 1, k);
+        } else {
+          // Extras drift off and fade as the sort happens.
+          x = lx;
+          y = ly + p * 60;
+          k = li * (1 - p);
+          alpha = lerp(0.5, 0, smooth(p * 1.4));
+          if (alpha <= 0.01) continue;
+        }
         const rot = it.rot * (1 - k);
-        const alpha = lerp(0.5, 1, k);
-        const c = INK;
-        const r = lerp(PENCIL[0], c[0], k);
-        const g = lerp(PENCIL[1], c[1], k);
-        const b = lerp(PENCIL[2], c[2], k);
+        const r = lerp(PENCIL[0], INK[0], k);
+        const g = lerp(PENCIL[1], INK[1], k);
+        const b = lerp(PENCIL[2], INK[2], k);
 
         ctx.save();
         ctx.translate(x, y);
         if (rot !== 0) ctx.rotate(rot);
-
-        // Marks: coded state appears past k = 0.35
         const mk = clamp01((k - 0.35) / 0.65);
-        if (mk > 0) {
-          const w = it.w || Math.ceil(ctx.measureText(it.text).width) + 12;
-          const h = fontSize + 6;
-          ctx.globalAlpha = mk;
-          if (it.code === "notice") {
-            ctx.fillStyle = COLORS.marker;
-            ctx.fillRect(0, -h / 2, w, h);
-          } else if (it.code === "question") {
-            ctx.strokeStyle = COLORS.ink;
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0.5, -h / 2 + 0.5, w - 1, h - 1);
-          } else {
-            ctx.strokeStyle = COLORS.ink;
-            ctx.lineWidth = 1;
-            ctx.setLineDash([2, 3]);
-            ctx.beginPath();
-            ctx.moveTo(0, h / 2 - 1);
-            ctx.lineTo(w, h / 2 - 1);
-            ctx.stroke();
-            ctx.setLineDash([]);
-          }
-          ctx.globalAlpha = 1;
-        }
-
+        if (mk > 0) drawMark(it.code, it.w, fontSize + 6, mk * alpha);
         ctx.fillStyle = `rgba(${r | 0},${g | 0},${b | 0},${alpha})`;
         ctx.fillText(it.text, 6, 0);
         ctx.restore();
       }
 
-      // Group labels and one-line summaries once the matrix has formed.
-      if (p > 0.6) {
-        const la = clamp01((p - 0.6) / 0.4);
-        const gutter = Math.min(48, Math.max(20, W * 0.04));
-        const rowH = fontSize + (W < 640 ? 9 : 13);
-        ctx.globalAlpha = la;
-        for (const it of items) {
-          if (it.hidden || !it.groupStart) continue;
-          ctx.font = `${fontSize}px ${fontFamily}`;
-          ctx.fillStyle = COLORS.pencil;
-          ctx.fillText(it.code, gutter, it.gy);
-          const lw = ctx.measureText(it.code).width;
-          ctx.fillStyle = COLORS.ink;
-          ctx.fillText(`×${groupCounts[it.code]}`, gutter + lw + 4, it.gy);
-          // summary line in the row above, serif italic, trimmed to the width
-          const summary = summaries[it.code] ?? "";
-          ctx.font = `italic ${fontSize + 2}px ${serifFamily}`;
-          ctx.fillStyle = COLORS.ink;
-          // If the full line won't fit, fall back to the short lead-in before the colon.
-          let text = summary;
-          const maxW = W - gutter * 2;
-          if (ctx.measureText(text).width > maxW) {
-            const lead = summary.split(":")[0];
-            text = lead;
-            while (text.length > 8 && ctx.measureText(text).width > maxW) text = text.slice(0, -4).trimEnd() + "…";
-          }
-          ctx.fillText(text, gutter, it.gy - rowH);
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      // Lens ring with a running count — the researcher's reticle.
-      if (pointer && canHover && p < 0.98) {
+      if (pointer && canHover && p < 0.5) {
         ctx.save();
-        ctx.globalAlpha = 0.9 * (1 - p);
+        ctx.globalAlpha = 0.9 * (1 - p * 2);
         ctx.strokeStyle = COLORS.ink;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -391,15 +299,14 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
         ctx.restore();
       }
 
-      if (p >= 0.98) {
-        setStatus(
-          `coded · ${CODE_ORDER.map((c) => `${c} ×${groupCounts[c]}`).join(" · ")}`,
-        );
-      } else if (p > 0.05) {
-        setStatus(`sorting ${total} fragments · ${Math.round(p * 100)}%`);
-      } else {
-        setStatus(`field · ${total} fragments${canHover ? " · move the cursor to read them" : ""}`);
-      }
+      // Hand the summary's plain words in as the tags land; swap tags at the end.
+      setVars(clamp01((raw - 0.55) / 0.4), swapped ? 1 : 0);
+
+      const total = items.length;
+      const kept = items.filter((i) => i.keep).length;
+      if (swapped) setStatus(`coded · notice ×${counts.notice} · question ×${counts.question} · test ×${counts.test} · ${total - kept} set aside`);
+      else if (raw > 0.05) setStatus(`sorting ${total} fragments · ${Math.round(raw * 100)}%`);
+      else setStatus(`field · ${total} fragments${canHover ? " · move the cursor to read them" : ""}`);
     };
 
     const loop = (now: number) => {
@@ -412,7 +319,6 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
       if (!raf) raf = requestAnimationFrame(loop);
     };
 
-    // Pointer as lens
     const onMove = (e: PointerEvent) => {
       const r = host.getBoundingClientRect();
       pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -426,7 +332,6 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     host.addEventListener("pointerleave", onLeave);
     host.addEventListener("pointercancel", onLeave);
 
-    // Only run while the hero is on screen and the tab is visible.
     const io = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
@@ -441,24 +346,26 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     document.addEventListener("visibilitychange", onVis);
 
     let resizeT = 0;
-    const onResize = () => {
-      window.clearTimeout(resizeT);
-      resizeT = window.setTimeout(() => {
+    const relayout = () => {
+      // Two passes: the first sets --frag, the second measures the tags at that size.
+      layout();
+      requestAnimationFrame(() => {
         layout();
         start();
-      }, 120);
+      });
+    };
+    const onResize = () => {
+      window.clearTimeout(resizeT);
+      resizeT = window.setTimeout(relayout, 120);
     };
     window.addEventListener("resize", onResize);
 
     readFont();
-    layout();
-    start();
-    // Re-measure once web fonts are in, so grid widths are exact.
+    relayout();
     if (document.fonts?.ready) {
       document.fonts.ready.then(() => {
         readFont();
-        layout();
-        start();
+        relayout();
       });
     }
 
@@ -472,5 +379,5 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("resize", onResize);
     };
-  }, [canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, summaries, reduced]);
+  }, [canvasRef, hostRef, headlineRef, summaryRef, statusRef, progressRef, fragments, extras, reduced]);
 }

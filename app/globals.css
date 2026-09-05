@@ -292,3 +292,23 @@ input[type="range"].sheet-range {
   accent-color: var(--color-ink);
   width: 100%;
 }
+
+/* ── Hero summary: plain words fade in, tags swap in from the canvas ─────── */
+.hero-host { --words: 0; --marks: 0; --frag: 12px; }
+.hero-summary .hero-words { opacity: var(--words); transition: opacity 120ms linear; }
+.hero-summary mark.frag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--frag);
+  line-height: calc(var(--frag) + 6px);
+  padding: 0 6px;
+  margin: 0 2px;
+  white-space: nowrap;
+  color: var(--color-ink);
+  background: none;
+  vertical-align: baseline;
+  opacity: var(--marks);
+}
+.hero-summary mark.frag[data-code="notice"] { background: var(--color-marker); }
+.hero-summary mark.frag[data-code="question"] { box-shadow: inset 0 0 0 1px var(--color-ink); }
+.hero-summary mark.frag[data-code="test"] { border-bottom: 1px dashed var(--color-ink); line-height: calc(var(--frag) + 5px); }
