@@ -1,23 +1,42 @@
 # sanha.manocha
 
-Personal site for Sanha Manocha — consumer & market insights researcher, behavioural economist, builder of small useful tools.
+Personal site for Sanha Manocha — consumer & market insights researcher and behavioural economist who builds whatever small thing helps her study people better.
 
 Built with Next.js (App Router), Tailwind CSS v4, Framer Motion and GSAP ScrollTrigger. Deploys to Vercel with zero configuration.
 
+## The idea
+
+The page is one argument in three states of a research mind, each with its own instrument:
+
+| State | Plain meaning | Signature treatment |
+| --- | --- | --- |
+| **Notice** | watching how people actually behave, and asking why | The bio as a transcript being coded: highlighter strokes scrubbed by scroll, margin codes that explain themselves |
+| **Question** | checking it properly, at scale, with numbers | The role, plotted: a panel of unit marks fills in as each statement scrolls past. Education, earlier roles, toolkit and recognition are filed underneath as numbered footnotes |
+| **Test** | trying small things to find out faster | The bench: five experiments, each with a working miniature you can operate |
+
+Field notes sit between Notice and Question as the bridge.
+
 ## Editing the site
 
-**All text lives in one file: [`content/site.ts`](content/site.ts).**
-Bio, work history, projects, earlier roles, education, toolkit, recognition, the field-notes feed and the contact links are plain arrays and strings there. Components read from those arrays and adapt to however many items exist, so adding, removing or rewording entries never touches animation code.
+**All text lives in one file: [`content/site.ts`](content/site.ts).** It has two clearly separated parts:
 
-A few fields worth knowing about:
+- **Part A — verbatim facts.** Job title, dates, numbers, education, awards, thesis, bio paragraphs. Carried over character for character from the original site.
+- **Part B — new copy.** Everything drafted for the redesign: the five bench write-ups, the "where this leads" sentence, the state glosses, the glossary, widget labels and the micro-survey questions. Edit or delete freely.
+
+Components read from these arrays and adapt to however many items exist, so adding, removing or rewording entries never touches animation code.
+
+### Fields worth knowing
 
 | Where | Field | What it does |
 | --- | --- | --- |
-| `hero.fragments` | `text`, `code` | The fragments that drift across the hero and sort into the coded grid. `code` is one of `motive`, `method`, `build`, `figure` and decides how it's marked. |
-| `about.highlights` | `phrase`, `code` | Phrases in the About paragraphs that get a highlighter stroke and a margin code. The phrase must match the paragraph text exactly. |
-| `path.entries` | `from`, `to` | `YYYY-MM` values used only to plot the time axis. `when` is what's displayed. |
-| `made.projects` | `href` | Optional link for a project name. Leave `null` for none. |
-| `writing.posts` | — | The field-notes feed. See below. |
+| `heroFragments` | `text`, `code` | Fragments that drift across the hero and sort into notice / question / test |
+| `noticeHighlights` | `phrase`, `code` | Phrases in the bio that get a highlighter stroke and margin code. Must match the text exactly |
+| `codeGloss` | — | Plain-language meaning of each margin code, shown on hover or tap |
+| `glossary` | — | Research terms found in the text, with a one-line gloss. Matched exactly, case-sensitive |
+| `questionPanel` | `point`, `kind`, `count` | Which role statement lights each panel group. `count` must be a number the statement states |
+| `pathEntries` | `from`, `to` | `YYYY-MM` used only to plot the time axis. `when` is what's displayed |
+| `bench` | `itch`, `tried`, `happened` | The three lab-entry fields. Leave one empty to hide it |
+| `writing.posts` | — | The field-notes feed (see below) |
 
 ### Publishing a field note
 
@@ -36,9 +55,7 @@ Add an object to `writing.posts`:
 }
 ```
 
-- With `body`, the note renders at `/notes/<slug>` and the feed links there.
-- Without `body`, the feed links straight to `href`.
-- The feed sorts by `date`, newest first. The home page shows the latest three; `/notes` shows all.
+With `body`, the note renders at `/notes/<slug>`. Without it, the feed links to `href`. The home page shows the latest three; `/notes` shows all.
 
 ## Running locally
 
@@ -52,14 +69,16 @@ npm run typecheck  # tsc --noEmit
 ## Structure
 
 ```
-app/            routes: /, /notes, /notes/[slug], not-found, icon
-components/     one component per section; Section.tsx is the shared coding-sheet layout
-content/site.ts all site content
-lib/            motion helpers (reduced-motion, hover detection), post helpers
+app/               routes: /, /notes, /notes/[slug], not-found, icon
+components/        Hero, Notice, Question (+ Panel, Provenance), Test, FieldNotes, Connect
+components/bench/  the five miniatures: Feed, Wheel, Delight, Screen, Platform
+content/site.ts    all site content (Part A verbatim, Part B new copy)
+lib/               motion helpers, glossary wrapper, post helpers
 ```
 
-## Design notes
+## Performance and accessibility
 
-The visual language is a qualitative researcher's coding sheet: evidence on the left, the analyst's margin on the right. Fraunces carries the human voice; JetBrains Mono carries the codes, figures and dates. One accent — a chartreuse highlighter — plus a rarely used red pen for figures.
-
-Motion respects `prefers-reduced-motion` everywhere: the hero renders as a static sorted grid, scroll choreography collapses to its end state, and the hover lens is disabled.
+- The five bench miniatures are code-split and mount only when scrolled within 480px of the viewport.
+- Timers and animation loops pause when their widget is off screen or the tab is hidden.
+- `prefers-reduced-motion` is honoured everywhere: the hero renders as a static sorted grid, scroll choreography collapses to its end state, the cadence pulses and cursor stop, and each miniature falls back to a static or instant version.
+- Every glossary term is a focusable button with a tooltip; the colour wheel has slider equivalents for keyboard users.

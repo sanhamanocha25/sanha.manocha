@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { hero } from "@/content/site";
+import { hero, heroFragments } from "@/content/site";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { useFieldCanvas } from "@/components/useFieldCanvas";
 
@@ -55,7 +55,7 @@ export function Hero() {
     headlineRef,
     statusRef,
     progressRef,
-    fragments: hero.fragments,
+    fragments: heroFragments,
     reduced,
   });
 
@@ -118,8 +118,8 @@ export function Hero() {
 
       {/* Accessible text alternative for the canvas content */}
       <p className="sr-only">
-        A field of short quotations drawn from this page — research methods, figures, motives and things
-        built — which sorts itself into a coded grid as you scroll.
+        A field of short quotations drawn from this page which sorts itself into three groups as you
+        scroll: notice, question, and test.
       </p>
     </section>
   );

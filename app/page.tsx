@@ -1,12 +1,10 @@
 import { Masthead } from "@/components/Masthead";
 import { Footer } from "@/components/Footer";
 import { Hero, HeroFacts } from "@/components/Hero";
-import { About } from "@/components/About";
-import { CurrentWork } from "@/components/CurrentWork";
-import { Built } from "@/components/Built";
-import { Path } from "@/components/Path";
-import { Education, Recognition, Toolkit } from "@/components/Codebook";
+import { Notice } from "@/components/Notice";
 import { FieldNotes } from "@/components/FieldNotes";
+import { Question } from "@/components/Question";
+import { Test } from "@/components/Test";
 import { Connect } from "@/components/Connect";
 
 export default function HomePage() {
@@ -16,14 +14,10 @@ export default function HomePage() {
       <main id="main">
         <Hero />
         <HeroFacts />
-        <About />
-        <CurrentWork />
-        <Built />
-        <Path />
-        <Education />
-        <Toolkit />
-        <Recognition />
+        <Notice />
         <FieldNotes />
+        <Question />
+        <Test />
         <Connect />
       </main>
       <Footer />

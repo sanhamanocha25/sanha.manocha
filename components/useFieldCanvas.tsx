@@ -2,7 +2,7 @@
 
 import { useEffect, type RefObject } from "react";
 
-type Code = "motive" | "method" | "build" | "figure";
+type Code = "notice" | "question" | "test";
 type Fragment = { text: string; code: string };
 
 type Item = {
@@ -24,14 +24,13 @@ type Item = {
   hidden: boolean;
 };
 
-const CODE_ORDER: Code[] = ["motive", "method", "build", "figure"];
+const CODE_ORDER: Code[] = ["notice", "question", "test"];
 const COLORS = {
   paper: "#f1f2ed",
   ink: "#15171b",
   pencil: "#6f756d",
   marker: "#dcff4f",
   markerDeep: "#c4ea2c",
-  redpen: "#d9412b",
 };
 
 // Small deterministic PRNG so the field looks the same on every visit.
@@ -58,7 +57,6 @@ function hexToRgb(hex: string) {
 }
 const INK = hexToRgb(COLORS.ink);
 const PENCIL = hexToRgb(COLORS.pencil);
-const RED = hexToRgb(COLORS.redpen);
 
 type Args = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
@@ -91,7 +89,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     let raf = 0;
     let visible = true;
     let lastStatus = "";
-    let groupCounts: Record<Code, number> = { motive: 0, method: 0, build: 0, figure: 0 };
+    let groupCounts: Record<Code, number> = { notice: 0, question: 0, test: 0 };
 
     const readFont = () => {
       const fam = getComputedStyle(document.documentElement).getPropertyValue("--font-jetbrains").trim();
@@ -181,7 +179,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
         placed.push({ x: hx, y: hy, w: tw, h: rowGap });
         return {
           text: f.text,
-          code: (CODE_ORDER.includes(f.code as Code) ? f.code : "motive") as Code,
+          code: (CODE_ORDER.includes(f.code as Code) ? f.code : "notice") as Code,
           hx,
           hy,
           amp: 6 + rand() * 10,
@@ -209,7 +207,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
       const maxRows = Math.max(1, Math.floor((bandBottom - bandTop) / rowH));
 
       const place = () => {
-        groupCounts = { motive: 0, method: 0, build: 0, figure: 0 };
+        groupCounts = { notice: 0, question: 0, test: 0 };
         let x = gutter;
         let row = 0;
         let cur: Code | null = null;
@@ -295,8 +293,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
 
         const rot = it.rot * (1 - k);
         const alpha = lerp(0.5, 1, k);
-        const isFig = it.code === "figure";
-        const c = isFig && k > 0.35 ? RED : INK;
+        const c = INK;
         const r = lerp(PENCIL[0], c[0], k);
         const g = lerp(PENCIL[1], c[1], k);
         const b = lerp(PENCIL[2], c[2], k);
@@ -311,16 +308,22 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
           const w = it.w || Math.ceil(ctx.measureText(it.text).width) + 12;
           const h = fontSize + 6;
           ctx.globalAlpha = mk;
-          if (it.code === "motive") {
+          if (it.code === "notice") {
             ctx.fillStyle = COLORS.marker;
             ctx.fillRect(0, -h / 2, w, h);
-          } else if (it.code === "method") {
+          } else if (it.code === "question") {
             ctx.strokeStyle = COLORS.ink;
             ctx.lineWidth = 1;
             ctx.strokeRect(0.5, -h / 2 + 0.5, w - 1, h - 1);
-          } else if (it.code === "build") {
-            ctx.fillStyle = COLORS.markerDeep;
-            ctx.fillRect(0, h / 2 - 2, w, 2);
+          } else {
+            ctx.strokeStyle = COLORS.ink;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 3]);
+            ctx.beginPath();
+            ctx.moveTo(0, h / 2 - 1);
+            ctx.lineTo(w, h / 2 - 1);
+            ctx.stroke();
+            ctx.setLineDash([]);
           }
           ctx.globalAlpha = 1;
         }

@@ -16,6 +16,9 @@ export function FieldNotes() {
 
   return (
     <Section id={writing.id} code={writing.code} tag={writing.tag} heading={writing.heading} wide>
+      <p className="italic-note measure mb-10 text-[clamp(1.05rem,1rem+0.3vw,1.3rem)] leading-[1.5] text-pencil">
+        {writing.bridge}
+      </p>
       {latest.length === 0 ? (
         <motion.div
           initial={reduced ? false : { opacity: 0, x: 40, rotate: 0.8 }}
