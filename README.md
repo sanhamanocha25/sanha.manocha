@@ -29,13 +29,13 @@ Components read from these arrays and adapt to however many items exist, so addi
 
 | Where | Field | What it does |
 | --- | --- | --- |
-| `heroFragments` | `text`, `code` | Fragments that drift across the hero and sort into notice / question / test |
+| `heroFragments`, `heroSummary` | `text`, `code` | Keywords that drift across the hero and sort into notice / question / test, each group headed by its one-line summary |
 | `noticeHighlights` | `phrase`, `code` | Phrases in the bio that get a highlighter stroke and margin code. Must match the text exactly |
 | `codeGloss` | — | Plain-language meaning of each margin code, shown on hover or tap |
 | `glossary` | — | Research terms found in the text, with a one-line gloss. Matched exactly, case-sensitive |
 | `questionPanel` | `point`, `kind`, `count` | Which role statement lights each panel group. `count` must be a number the statement states |
-| `pathEntries` | `from`, `to` | `YYYY-MM` used only to plot the time axis. `when` is what's displayed |
-| `bench` | `itch`, `tried`, `happened` | The three lab-entry fields. Leave one empty to hide it |
+| `pathEntries`, `education` | `from`, `to`, `years` | Used only to plot the time axis: roles by month, education by year. `when` and `meta` are what is displayed |
+| `bench` | `why`, `did`, `result` | The three lab-entry fields. Leave one empty to hide it |
 | `writing.posts` | — | The field-notes feed (see below) |
 
 ### Publishing a field note

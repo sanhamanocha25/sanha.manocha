@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { hero, heroFragments } from "@/content/site";
+import { hero, heroFragments, heroSummary } from "@/content/site";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { useFieldCanvas } from "@/components/useFieldCanvas";
 
@@ -56,6 +56,7 @@ export function Hero() {
     statusRef,
     progressRef,
     fragments: heroFragments,
+    summaries: heroSummary,
     reduced,
   });
 

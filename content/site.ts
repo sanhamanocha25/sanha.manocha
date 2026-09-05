@@ -32,18 +32,11 @@ export const meta = {
   footer: "Sanha Manocha — last updated 2026.",
 };
 
-export const hero = {
-  eyebrow: "i. an opening note",
-  headline:
-    "I spend my working life trying to understand why people buy, believe, and behave the way they do — then I go build the tools that help ask better questions about it.",
-  sub:
-    "Consumer & market insights researcher by trade, behavioural economist by training, and someone who can't leave a good research problem alone until she's turned it into a working prototype.",
-  facts: [
-    { label: "Based in", value: "India" },
-    { label: "Currently", value: "Consumer & Market Insights Executive, Pilgrim" },
-    { label: "Trained at", value: "Erasmus University Rotterdam" },
-  ],
-};
+export const heroFacts = [
+  { label: "Based in", value: "India" },
+  { label: "Currently", value: "Consumer & Market Insights Executive, Pilgrim" },
+  { label: "Trained at", value: "Erasmus University Rotterdam" },
+];
 
 /** The bio, verbatim. A third, new paragraph is appended from Part B. */
 export const bioParagraphs = [
@@ -115,18 +108,22 @@ export const education = [
     meta: "2022 — 2024 · 8/10",
     thesis:
       "Thesis: \"How Price Transparency Shapes Fairness, and How Fairness Drives Consumer Behaviour\"",
+    /** plotted on the time axis at year resolution (the years stated in `meta`) */
+    years: [2022, 2024] as [number, number],
   },
   {
     degree: "Exchange Program",
     school: "Baldwin Wallace University, USA",
     meta: "Spring 2020 · 9/10",
     thesis: null,
+    years: null,
   },
   {
     degree: "BCom Finance and Investment",
     school: "Christ University, Bangalore, India",
     meta: "2018 — 2021 · 9/10",
     thesis: null,
+    years: null,
   },
 ];
 
@@ -170,8 +167,7 @@ export const recognition = [
 ];
 
 export const writingNote = [
-  "I'm starting to write in public — not as a research analyst, but closer to an anthropologist who happens to also run consumer studies for a living. The plan is simple: pick something about how people actually live, learn it properly, and only then write about it.",
-  "This section will hold that writing as it goes up — starting on Substack, mirrored here. Nothing published yet. Check back soon.",
+  "Nothing published yet. Writing will go up on Substack and be mirrored here.",
 ];
 
 export const connect = {
@@ -191,29 +187,49 @@ export const connect = {
    ║  Nothing below this line is quoted from the original site.            ║
    ╚═══════════════════════════════════════════════════════════════════════╝ */
 
+/** Hero. Rewritten; edit freely. */
+export const hero = {
+  eyebrow: "i. an opening note",
+  headline: "I want to know why people buy what they buy. Consumer research is how I find out, and experimenting with new ways to ask is the part I enjoy most.",
+  sub: "Consumer and market insights researcher, trained as a behavioural economist. Most of my week is qualitative and quantitative research for a D2C beauty brand. The rest goes on small experiments in how research itself could work better.",
+  facts: heroFacts,
+};
+
 /** The three states of a research mind. `gloss` is the plain-language line. */
 export const states = {
-  notice: { word: "Notice", number: "01", gloss: "watching how people actually behave, and asking why" },
-  question: { word: "Question", number: "02", gloss: "checking it properly, at scale, with numbers" },
-  test: { word: "Test", number: "03", gloss: "trying small things to find out faster" },
+  notice: {
+    word: "Notice",
+    number: "01",
+    gloss: "paying attention to how people actually behave, and asking why",
+  },
+  question: {
+    word: "Question",
+    number: "02",
+    gloss: "interviews, focus groups, surveys and pricing studies: qualitative and quantitative, designed and analysed properly",
+  },
+  test: {
+    word: "Test",
+    number: "03",
+    gloss: "small experiments in how research itself could work better, built when the right tool didn't exist",
+  },
 } as const;
 
 export const nav = [
   { label: "Notice", href: "/#notice" },
-  { label: "Field notes", href: "/notes" },
   { label: "Question", href: "/#question" },
   { label: "Test", href: "/#test" },
+  { label: "Field notes", href: "/notes" },
   { label: "Connect", href: "/#connect" },
 ];
 
-/** NEW — the closing sentence of the bio. Appended as the third paragraph. */
+/** NEW: the closing sentence of the bio. Appended as the third paragraph. */
 export const whereThisLeads =
-  "Research is the thing I do and want to keep doing; I'm still working out exactly where it leads.";
+  "Research is what I want to keep doing. Where exactly it leads, I'm still working out.";
 
 /**
  * Phrases in the bio that get a highlighter stroke and a margin code.
  * Phrases must match the paragraph text exactly or they're simply skipped.
- * `code` labels are annotation labels, not facts — edit freely.
+ * `code` labels are annotation labels, not facts. Edit freely.
  */
 export const noticeHighlights = [
   { phrase: "end-to-end qualitative and quantitative research", code: "METHOD" },
@@ -222,18 +238,18 @@ export const noticeHighlights = [
   { phrase: "behavioural economics", code: "TRAINING" },
   { phrase: "why people do what they do", code: "MOTIVE" },
   { phrase: "build a small tool to test a theory", code: "INSTRUMENT" },
-  { phrase: "still working out exactly where it leads", code: "OPEN" },
+  { phrase: "still working out", code: "OPEN" },
 ];
 
-/** Plain-language meaning of each margin code, shown on hover/tap. */
+/** Plain-language meaning of each margin code, shown on hover or tap. */
 export const codeGloss: Record<string, string> = {
-  METHOD: "how the observation was gathered",
+  METHOD: "how the evidence was gathered",
   AUDIENCE: "who the work is for",
-  SCOPE: "how much of the study I own",
+  SCOPE: "how much of a study I own, start to finish",
   TRAINING: "where the way of thinking comes from",
-  MOTIVE: "the question underneath everything",
-  INSTRUMENT: "a tool is a means, not the point",
-  OPEN: "an honest unknown, left open on purpose",
+  MOTIVE: "the question under everything else",
+  INSTRUMENT: "tools are a means to the question, not the point",
+  OPEN: "an unknown, left open on purpose",
 };
 
 /**
@@ -241,24 +257,24 @@ export const codeGloss: Record<string, string> = {
  * plain gloss. Terms are matched exactly (case-sensitive) inside paragraphs.
  */
 export const glossary: Record<string, string> = {
-  "D2C": "direct-to-consumer: a brand that sells to people online rather than through shops",
+  "D2C": "direct-to-consumer: a brand that sells online to people directly, not through shops",
   "IDIs": "in-depth interviews, one person at a time",
-  "FGDs": "focus group discussions: a small group talking about a topic together",
+  "FGDs": "focus group discussions: a small group talking through a topic together",
   "in-home visits": "watching how a product is actually used where people live",
-  "concept-evolution calls": "sessions where an early product idea is reworked with the people who own it",
+  "concept-evolution calls": "working sessions where an early product idea is reworked with the people who own it",
   "U&A": "usage and attitude study: who uses a category, how, and what they think of it",
   "concept and claims tests": "checking whether a product idea, and what it promises, lands with people",
-  "barrier and lapser studies": "why people don't buy, and why people who did stopped",
-  "brand tracking": "measuring what people think of a brand, repeatedly over time",
-  "conjoint and pricing research": "working out what people value and what they'll pay, from their choices",
-  "Van Westendorp": "a method for finding the price range people consider acceptable",
+  "barrier and lapser studies": "why people don't buy, and why people who did buy stopped",
+  "brand tracking": "measuring what people think of a brand, repeatedly, over time",
+  "conjoint and pricing research": "working out what people value and what they'll pay from the choices they make",
+  "Van Westendorp": "a method for finding the price range people find acceptable",
   "Gabor-Granger": "a method for finding how likely people are to buy at different prices",
   "head-to-head testing": "putting two products in front of the same people and asking which wins",
   "no significant lift": "the improvement was too small to be sure it was real",
-  "voice-of-consumer": "what customers are saying, gathered and passed on",
+  "voice-of-consumer": "what customers are saying, gathered and passed on to the people who decide",
   "thematic coding": "sorting what people said into recurring themes",
-  "randomised controlled trial": "people are randomly split into groups so differences can be trusted",
-  "A/B testing": "showing two versions to different people to see which performs better",
+  "randomised controlled trial": "people are randomly split into groups, so the difference between groups can be trusted",
+  "A/B testing": "showing two versions to different people to see which one does better",
   "OTC derivatives": "financial contracts traded directly between two parties rather than on an exchange",
   "Qualtrics": "a survey platform",
   "Power BI": "a dashboard and reporting tool",
@@ -267,9 +283,9 @@ export const glossary: Record<string, string> = {
 };
 
 /**
- * QUESTION panel. Each group is lit by one of the Pilgrim role points (`point`
- * is the 0-based index into role.points). Counts and labels come only from
- * what those points say. Kinds:
+ * QUESTION panel. Each group is lit by one of the role points (`point` is the
+ * 0-based index into role.points). Counts and labels come only from what
+ * those points say. Kinds:
  *   count   — N unit marks + a numeral (N must be stated in the text)
  *   legend  — a list of named items, no counts
  *   pair    — two named items side by side
@@ -356,11 +372,13 @@ export const questionPanel: PanelGroup[] = [
 /** Labels used around the QUESTION section. */
 export const questionLabels = {
   panelTitle: "the role, plotted",
-  panelHint: "every mark here is a number or a name from the statements on the right",
+  panelHint: "every mark here is a number or a name taken from the statements alongside",
   provenanceTitle: "where the rigour came from",
+  provenanceNote: "the MSc and the earlier roles are plotted on the axis, by year and by month; everything else is on file below",
   instruments: "instruments",
   onRecord: "on the record",
   training: "training",
+  earlierPath: "earlier path",
 };
 
 /* ── TEST bench ─────────────────────────────────────────────────────────── */
@@ -371,19 +389,19 @@ export type Bench = {
   number: string;
   title: string;
   status: string;
-  /** the three lab-entry fields — leave any empty string to hide it */
-  itch: string;
-  tried: string;
-  happened: string;
+  /** the three lab-entry fields. Leave any one empty to hide it */
+  why: string;
+  did: string;
+  result: string;
   /** small caption under the interactive miniature */
   caption: string;
 };
 
 export const benchLabels = {
-  itch: "the itch",
-  tried: "what I tried",
-  happened: "what happened",
-  lede: "Curiosity-driven experiments. Each one exists because a research question was waiting on a tool that didn't exist yet, or was too slow.",
+  why: "why",
+  did: "what I did",
+  result: "what came of it",
+  lede: "Small experiments. Most of them started because a research question was waiting on a tool that didn't exist, or was too slow.",
   illustration: "Illustration with abstract marks. Not real data.",
 };
 
@@ -391,51 +409,41 @@ export const bench: Bench[] = [
   {
     id: "feed",
     number: "01",
-    title: "A feedback loop that doesn't wait for the quarter",
+    title: "Reading feedback as it comes in",
     status: "running",
-    itch: "Quarterly reports told me what customers thought three months ago. I wanted to know what they thought this morning.",
-    tried:
-      "An automated dashboard that pulls incoming customer feedback through an API and analyses it live, instead of waiting for the next report.",
-    happened:
-      "The loop got shorter. Feedback is read as it arrives rather than batched into a quarterly retrospective, which is the only reason it was built.",
-    caption: "Toggle between reading feedback as it arrives and reading it once a quarter.",
+    why: "Quarterly research tells you what customers thought a quarter ago. I wanted the loop to be shorter.",
+    did: "An automated dashboard that pulls incoming customer feedback through an API and analyses it as it arrives, instead of waiting for the next report.",
+    result: "Feedback gets read the day it comes in rather than the month the report is due.",
+    caption: "Switch between reading feedback as it arrives and reading it once a quarter.",
   },
   {
     id: "wheel",
     number: "02",
-    title: "A survey question no survey tool could ask",
+    title: "A colour question no survey tool could ask",
     status: "built and used",
-    itch:
-      "I needed people to pick a packaging colour. Every survey tool I tried, including the category-standard ones, could only offer a fixed list of swatches.",
-    tried:
-      "I designed the interaction myself: a colour wheel respondents can move around freely, and a data pipeline that writes each pick straight into Google Sheets. Both had to be worked out from scratch.",
-    happened:
-      "People could express a preference directly rather than choose the nearest approximation, and every response landed in a sheet ready for analysis.",
+    why: "We needed people to pick a packaging colour. Every survey tool I tried, including the category-standard ones, could only offer a fixed list of swatches.",
+    did: "Designed the interaction myself: a colour wheel respondents can move around freely, with each pick written straight into Google Sheets. The interaction design and the data pipeline both had to be worked out from scratch.",
+    result: "Respondents could show the colour they meant rather than the nearest swatch, and the data was ready to analyse as it landed.",
     caption: "Drag on the wheel. Each pick lands in the sheet row below, the way a respondent's would.",
   },
   {
     id: "delight",
     number: "03",
-    title: "Making a survey feel less like a survey",
+    title: "Surveys people actually finish",
     status: "past experiment",
-    itch: "Unincentivised respondents lose patience fast. Most surveys give them no reason to stay.",
-    tried:
-      "An exploration into making surveys feel like a small, enjoyable interaction rather than a piece of research: animation, light gamification, and small moments of delight such as confetti on completion.",
-    happened:
-      "It was a pattern study rather than a product: a set of small interaction ideas for holding attention when nobody is being paid to give it.",
-    caption: "Three questions about this page. See how it feels to finish one.",
+    why: "Unincentivised respondents lose patience quickly, and most surveys give them no reason to stay.",
+    did: "Explored what happens when a survey feels less like research and more like a small, enjoyable interaction: animation, light gamification, confetti when you finish.",
+    result: "A set of interaction patterns for holding attention when nobody is being paid to give it.",
+    caption: "Three questions about this page. Try finishing one.",
   },
   {
     id: "screen",
     number: "04",
-    title: "Screening concepts with a borrowed persona",
+    title: "Screening concepts with a synthetic persona",
     status: "experiment",
-    itch:
-      "Early-stage concept lists are long and fieldwork budget is finite. Testing fifteen ideas properly costs as much as testing five.",
-    tried:
-      "An LLM primed with a consumer persona, demographics and context included, generated synthetic responses to early-stage concepts. I tested those against real respondent data.",
-    happened:
-      "The gap was surprisingly small. Not small enough to replace real qualitative research, and never meant to. It is a way to narrow a large set, say fifteen concepts down to five, before spending real fieldwork budget on the ones that survive.",
+    why: "Concept lists start long and fieldwork budgets don't. Testing fifteen ideas properly costs the same as testing five.",
+    did: "Primed an LLM with a consumer persona, demographics and context included, and had it respond to early-stage concepts. Then compared those responses with real respondent data.",
+    result: "The gap was smaller than expected. Small enough to use for early screening, say fifteen concepts down to five, before spending fieldwork budget on the ones that survive. Not a replacement for real qualitative research, and not meant as one.",
     caption: "Run the screen. Fifteen abstract concepts, two readings of each, five survive.",
   },
   {
@@ -443,20 +451,21 @@ export const bench: Bench[] = [
     number: "05",
     title: "A survey platform, from scratch",
     status: "in progress",
-    itch: "",
-    tried: "Currently building a survey platform from scratch.",
-    happened: "",
-    caption: "In progress. More when there is more to say.",
+    why: "",
+    did: "Building a survey platform from scratch. In progress.",
+    result: "",
+    caption: "In progress. More when there is more to show.",
   },
 ];
 
-/** Bench 03 — the micro survey a visitor can complete. */
+/** Bench 03: the micro survey a visitor can complete. */
 export const delightSurvey = {
+  intro: "Three questions. No right answers. Nothing is saved.",
   questions: [
-    { q: "Which state are you in right now?", options: ["noticing", "questioning", "testing"] },
+    { q: "Which of the three are you in right now?", options: ["noticing", "questioning", "testing"] },
     {
       q: "How long do you usually last in an online survey?",
-      options: ["under a minute", "a few minutes", "as long as it takes", "I close it immediately"],
+      options: ["under a minute", "a few minutes", "as long as it takes", "I close it straight away"],
     },
     { q: "How did this one feel?", options: ["like a survey", "like a small game", "hard to say"] },
   ],
@@ -468,7 +477,7 @@ export const delightSurvey = {
   again: "again",
 };
 
-/** Bench 01 — labels for the feed miniature. */
+/** Bench 01: labels for the feed miniature. */
 export const feedLabels = {
   live: "as it arrives",
   quarterly: "once a quarter",
@@ -477,7 +486,7 @@ export const feedLabels = {
   received: "received",
 };
 
-/** Bench 04 — labels for the screening miniature. */
+/** Bench 04: labels for the screening miniature. */
 export const screenLabels = {
   run: "run the screen",
   reset: "reset",
@@ -488,7 +497,7 @@ export const screenLabels = {
   keep: 5,
 };
 
-/** Bench 02 — sheet column headers for the colour miniature. */
+/** Bench 02: sheet column headers for the colour miniature. */
 export const wheelLabels = {
   columns: ["timestamp", "hex", "hue", "sat", "val"],
   hint: "drag on the wheel, or use the sliders",
@@ -508,16 +517,15 @@ export type Post = {
   /** canonical URL (e.g. Substack) */
   href?: string;
   source?: string;
-  /** optional full text, one string per paragraph → gets /notes/<slug> */
+  /** optional full text, one string per paragraph. Gets its own page at /notes/<slug> */
   body?: string[];
 };
 
 export const writing = {
   id: "writing",
   code: "ix",
-  tag: "a work in progress",
+  tag: "field notes",
   heading: "Field notes",
-  bridge: "Curiosity, applied with rigour. This is where noticing and questioning meet.",
   note: writingNote,
   /**
    * Add posts here. Example:
@@ -535,60 +543,57 @@ export const writing = {
 };
 
 /**
- * Hero fragments — short quotations lifted from the text on this page. Each
- * sorts into one of the three states. Keep them short; they're drawn on a canvas.
+ * Hero fragments: short keywords that drift across the opening screen and
+ * then sort into the three states. `heroSummary` is the one-line reading of
+ * each group, shown above it once the sort completes, so the keywords add up
+ * to a person rather than a word cloud.
  */
+export const heroSummary: Record<"notice" | "question" | "test", string> = {
+  notice: "what I pay attention to: why people buy, believe and behave the way they do, and how they actually live",
+  question: "how I check it: interviews and focus groups on one side, 40+ quantitative studies a year on the other",
+  test: "what I try when the right tool doesn't exist: small experiments, most of them built by hand",
+};
+
 export const heroFragments: { text: string; code: "notice" | "question" | "test" }[] = [
   { text: "why people buy", code: "notice" },
-  { text: "believe, and behave", code: "notice" },
-  { text: "why people do what they do", code: "notice" },
-  { text: "a fairly stubborn curiosity", code: "notice" },
+  { text: "why people believe what they believe", code: "notice" },
   { text: "how people actually live", code: "notice" },
-  { text: "human understanding", code: "notice" },
   { text: "in-home visits", code: "notice" },
-  { text: "IDIs", code: "notice" },
-  { text: "FGDs", code: "notice" },
-  { text: "an anthropologist", code: "notice" },
-  { text: "learn it properly", code: "notice" },
-  { text: "voice-of-consumer", code: "notice" },
-  { text: "fairness", code: "notice" },
-  { text: "price transparency", code: "notice" },
-  { text: "framing and visuals", code: "notice" },
-  { text: "where it leads", code: "notice" },
+  { text: "in-depth interviews", code: "notice" },
+  { text: "focus groups", code: "notice" },
+  { text: "a stubborn curiosity", code: "notice" },
+  { text: "price transparency and fairness", code: "notice" },
+  { text: "how framing changes a choice", code: "notice" },
+  { text: "what customers are actually saying", code: "notice" },
+  { text: "human understanding, then product concepts", code: "notice" },
+  { text: "an anthropologist's habit of watching", code: "notice" },
   { text: "40+ quantitative studies a year", code: "question" },
-  { text: "10+ category D2C beauty portfolio", code: "question" },
-  { text: "U&A", code: "question" },
+  { text: "a 10+ category portfolio", code: "question" },
+  { text: "usage and attitude studies", code: "question" },
   { text: "concept and claims tests", code: "question" },
   { text: "barrier and lapser studies", code: "question" },
   { text: "brand tracking", code: "question" },
-  { text: "conjoint", code: "question" },
+  { text: "conjoint and pricing research", code: "question" },
   { text: "Van Westendorp", code: "question" },
   { text: "Gabor-Granger", code: "question" },
-  { text: "head-to-head testing", code: "question" },
-  { text: "no significant lift", code: "question" },
-  { text: "n=78", code: "question" },
-  { text: "35%", code: "question" },
-  { text: "7 regions", code: "question" },
-  { text: "99% accuracy", code: "question" },
-  { text: "randomised controlled trial", code: "question" },
+  { text: "head-to-head against the category leader", code: "question" },
+  { text: "no significant lift, so we said so", code: "question" },
+  { text: "a randomised controlled trial, n=78", code: "question" },
+  { text: "research across 7 regions", code: "question" },
+  { text: "99% accuracy on ₹375Cr+ a month", code: "question" },
   { text: "thematic coding", code: "question" },
   { text: "significance testing", code: "question" },
-  { text: "beating the incumbent", code: "question" },
-  { text: "Goonj", code: "question" },
-  { text: "a working prototype", code: "test" },
-  { text: "a small tool to test a theory", code: "test" },
-  { text: "feedback as it arrives", code: "test" },
-  { text: "a colour wheel", code: "test" },
-  { text: "straight into Google Sheets", code: "test" },
-  { text: "confetti on completion", code: "test" },
-  { text: "light gamification", code: "test" },
-  { text: "a borrowed persona", code: "test" },
-  { text: "synthetic responses", code: "test" },
-  { text: "fifteen down to five", code: "test" },
-  { text: "from scratch", code: "test" },
-  { text: "real-time product-feedback dashboard", code: "test" },
-  { text: "in-house survey platform", code: "test" },
-  { text: "A/B testing framework", code: "test" },
+  { text: "a monthly briefing to the CEO and CMO", code: "question" },
+  { text: "a colour wheel instead of a swatch list", code: "test" },
+  { text: "feedback read as it arrives", code: "test" },
+  { text: "confetti when the survey ends", code: "test" },
+  { text: "an LLM primed with a consumer persona", code: "test" },
+  { text: "fifteen concepts screened down to five", code: "test" },
+  { text: "a survey platform, from scratch", code: "test" },
+  { text: "an A/B testing framework", code: "test" },
   { text: "gamified app interventions", code: "test" },
-  { text: "peer-comparison tool", code: "test" },
+  { text: "a peer-comparison tool", code: "test" },
+  { text: "automating the tedious parts", code: "test" },
+  { text: "a small tool to test a theory", code: "test" },
+  { text: "built because the right tool didn't exist", code: "test" },
 ];

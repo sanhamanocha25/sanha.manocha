@@ -65,10 +65,11 @@ type Args = {
   statusRef: RefObject<HTMLParagraphElement | null>;
   progressRef: RefObject<number>;
   fragments: Fragment[];
+  summaries: Record<Code, string>;
   reduced: boolean;
 };
 
-export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, reduced }: Args) {
+export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, summaries, reduced }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current;
     const host = hostRef.current;
@@ -83,6 +84,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     let dpr = 1;
     let fontSize = 12;
     let fontFamily = "monospace";
+    let serifFamily = "serif";
     let items: Item[] = [];
     let pointer: { x: number; y: number } | null = null;
     let lensR = 150;
@@ -94,12 +96,14 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
     const readFont = () => {
       const fam = getComputedStyle(document.documentElement).getPropertyValue("--font-jetbrains").trim();
       fontFamily = fam ? `${fam}, ui-monospace, Menlo, monospace` : "ui-monospace, Menlo, monospace";
+      const ser = getComputedStyle(document.documentElement).getPropertyValue("--font-fraunces").trim();
+      serifFamily = ser ? `${ser}, Georgia, serif` : "Georgia, serif";
     };
 
     const pickFragments = (): Fragment[] => {
       const isMobile = W < 640;
       const isTablet = W < 1024;
-      const target = isMobile ? 26 : isTablet ? 42 : fragments.length;
+      const target = isMobile ? 21 : isTablet ? 36 : fragments.length;
       if (target >= fragments.length) return fragments;
       // Take an even spread across codes: round-robin through the code buckets.
       const buckets: Record<string, Fragment[]> = {};
@@ -217,6 +221,7 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
           it.groupStart = false;
           if (it.code !== cur) {
             if (cur !== null) row++;
+            row++; // a row for the group's one-line summary
             cur = it.code;
             x = gutter;
             it.groupStart = true;
@@ -333,20 +338,33 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
         ctx.restore();
       }
 
-      // Group labels once the matrix has formed.
+      // Group labels and one-line summaries once the matrix has formed.
       if (p > 0.6) {
         const la = clamp01((p - 0.6) / 0.4);
+        const gutter = Math.min(48, Math.max(20, W * 0.04));
+        const rowH = fontSize + (W < 640 ? 9 : 13);
         ctx.globalAlpha = la;
-        ctx.fillStyle = COLORS.pencil;
-        ctx.font = `${fontSize}px ${fontFamily}`;
         for (const it of items) {
           if (it.hidden || !it.groupStart) continue;
-          const gutter = Math.min(48, Math.max(20, W * 0.04));
+          ctx.font = `${fontSize}px ${fontFamily}`;
+          ctx.fillStyle = COLORS.pencil;
           ctx.fillText(it.code, gutter, it.gy);
           const lw = ctx.measureText(it.code).width;
           ctx.fillStyle = COLORS.ink;
           ctx.fillText(`×${groupCounts[it.code]}`, gutter + lw + 4, it.gy);
-          ctx.fillStyle = COLORS.pencil;
+          // summary line in the row above, serif italic, trimmed to the width
+          const summary = summaries[it.code] ?? "";
+          ctx.font = `italic ${fontSize + 2}px ${serifFamily}`;
+          ctx.fillStyle = COLORS.ink;
+          // If the full line won't fit, fall back to the short lead-in before the colon.
+          let text = summary;
+          const maxW = W - gutter * 2;
+          if (ctx.measureText(text).width > maxW) {
+            const lead = summary.split(":")[0];
+            text = lead;
+            while (text.length > 8 && ctx.measureText(text).width > maxW) text = text.slice(0, -4).trimEnd() + "…";
+          }
+          ctx.fillText(text, gutter, it.gy - rowH);
         }
         ctx.globalAlpha = 1;
       }
@@ -454,5 +472,5 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, statusRef, pro
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("resize", onResize);
     };
-  }, [canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, reduced]);
+  }, [canvasRef, hostRef, headlineRef, statusRef, progressRef, fragments, summaries, reduced]);
 }

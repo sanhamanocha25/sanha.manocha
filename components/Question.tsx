@@ -84,8 +84,8 @@ export function Question() {
                   <motion.li
                     key={i}
                     data-idx={i}
-                    initial={reduced ? false : { clipPath: "inset(0 100% 0 0)" }}
-                    whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+                    initial={reduced ? false : { opacity: 0, x: -14 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, margin: "0px 0px -15% 0px" }}
                     transition={{ duration: 0.7, ease: EASE }}
                     className="grid grid-cols-[2.4rem_1fr] gap-x-3 border-t border-grid py-6 first:border-t-0 first:pt-0 sm:grid-cols-[3rem_1fr] sm:gap-x-4"

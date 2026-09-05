@@ -34,9 +34,9 @@ function Entry({ entry, index }: { entry: Bench; index: number }) {
   const reduced = usePrefersReducedMotion();
   const Widget = widgets[entry.id];
   const fields = [
-    { label: benchLabels.itch, text: entry.itch },
-    { label: benchLabels.tried, text: entry.tried },
-    { label: benchLabels.happened, text: entry.happened },
+    { label: benchLabels.why, text: entry.why },
+    { label: benchLabels.did, text: entry.did },
+    { label: benchLabels.result, text: entry.result },
   ].filter((f) => f.text);
   const flip = index % 2 === 1;
 

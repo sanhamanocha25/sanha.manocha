@@ -104,7 +104,7 @@ export default function Delight() {
           {step < 0 ? (
             <motion.div key="intro" {...fade(reduced)} className="flex h-full flex-col justify-between gap-4">
               <p className="italic-note m-0 text-[1.05rem] leading-[1.4] text-pencil">
-                {qs.length} questions. No right answers. Nothing is saved.
+                {delightSurvey.intro}
               </p>
               <button type="button" onClick={begin} className="focus-marker mono self-start border border-ink px-3 py-1.5 text-[0.75rem] hover:bg-marker">
                 {delightSurvey.start}
