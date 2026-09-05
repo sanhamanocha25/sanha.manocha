@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { questionLabels, questionPanel, role } from "@/content/site";
+import { questionLabels, questionPanel, role, roleHighlights } from "@/content/site";
 import { StateBand } from "@/components/StateBand";
 import { PanelGroupView } from "@/components/Panel";
 import { Provenance } from "@/components/Provenance";
-import { glossText } from "@/lib/gloss";
+import { Coded } from "@/components/Coded";
 import { EASE, usePrefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -94,7 +94,12 @@ export function Question() {
                       ¶ {String(i + 1).padStart(2, "0")}
                     </span>
                     <div className="min-w-0">
-                      <p className="body-serif m-0 text-[clamp(1.05rem,1rem+0.3vw,1.2rem)] leading-[1.6]">{glossText(pt, `q${i}`)}</p>
+                      <Coded
+                        text={pt}
+                        highlights={roleHighlights[i] ?? []}
+                        keyPrefix={`q${i}`}
+                        className="body-serif m-0 text-[clamp(1.05rem,1rem+0.3vw,1.2rem)] leading-[1.6]"
+                      />
                       {/* Inline panel groups for small screens */}
                       {groups.length ? (
                         <div className="mt-4 max-w-[26rem] border border-ink bg-paper p-4 lg:hidden">

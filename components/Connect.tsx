@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { connect, connectText } from "@/content/site";
+import { connect, connectHighlights, connectText } from "@/content/site";
+import { Coded } from "@/components/Coded";
 import { Section } from "@/components/Section";
 import { EASE, usePrefersReducedMotion } from "@/lib/motion";
 
@@ -9,7 +10,13 @@ export function Connect() {
   const reduced = usePrefersReducedMotion();
   return (
     <Section id={connect.id} code={connect.code} tag={connect.tag} heading={connect.heading} wide>
-      <p className="body-serif measure m-0 text-[clamp(1.05rem,1rem+0.3vw,1.25rem)] leading-[1.6]">{connectText}</p>
+      <Coded
+        text={connectText}
+        highlights={connectHighlights}
+        gloss={false}
+        keyPrefix="cx"
+        className="body-serif measure m-0 text-[clamp(1.1rem,1rem+0.4vw,1.35rem)] leading-[1.6]"
+      />
       <ul className="m-0 mt-12 list-none p-0">
         {connect.links.map((l, i) => (
           <motion.li

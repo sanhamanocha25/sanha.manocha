@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { bench, benchLabels, type Bench } from "@/content/site";
 import { StateBand } from "@/components/StateBand";
 import { LazyMount } from "@/components/LazyMount";
-import { glossText } from "@/lib/gloss";
+import { Coded } from "@/components/Coded";
 import { EASE, usePrefersReducedMotion } from "@/lib/motion";
 
 // Each miniature is its own chunk and only mounts when scrolled near.
@@ -73,7 +73,13 @@ function Entry({ entry, index }: { entry: Bench; index: number }) {
           {fields.map((f) => (
             <div key={f.label} className="grid gap-x-6 gap-y-1 sm:grid-cols-[7rem_minmax(0,1fr)]">
               <dt className="mono pt-1 text-[0.72rem] text-pencil">{f.label}</dt>
-              <dd className="body-serif m-0 text-[clamp(1rem,0.95rem+0.3vw,1.15rem)] leading-[1.6]">{glossText(f.text, `b-${entry.id}-${f.label}`)}</dd>
+              <Coded
+                as="dd"
+                text={f.text}
+                highlights={entry.highlights}
+                keyPrefix={`b-${entry.id}-${f.label}`}
+                className="body-serif m-0 text-[clamp(1rem,0.95rem+0.3vw,1.15rem)] leading-[1.6]"
+              />
             </div>
           ))}
         </dl>

@@ -25,7 +25,7 @@
 
 export const meta = {
   name: "Sanha Manocha",
-  title: "Sanha Manocha · Consumer insights, curious learner",
+  title: "Sanha Manocha",
   description:
     "Consumer & market insights researcher, behavioural economist, and part-time builder of small useful tools. Field notes from Sanha Manocha.",
   siteUrl: "https://sanhamanocha.com",
@@ -48,6 +48,8 @@ export const role = {
   title: "Consumer & Market Insights Executive",
   org: "Heavenly Secrets Pvt. Ltd. — Pilgrim & PHD brand, India",
   when: "Nov 2025 — present",
+  /** used only to draw the bar on the time axis */
+  from: "2025-11",
   points: [
     "Co-own end-to-end consumer research across a 10+ category D2C beauty portfolio — embedded in new product development, brand positioning, launch readiness, marketing, and post-launch iteration.",
     "Lead qualitative research end-to-end: IDIs, FGDs, in-home visits, and iterative concept-evolution calls with category heads, synthesising across dozens of studies to turn human understanding into product concepts.",
@@ -58,9 +60,6 @@ export const role = {
     "Build internal tools and pilot new research methods out of curiosity: a real-time product-feedback dashboard, an in-house survey platform, and ongoing experiments with emerging techniques.",
   ],
 };
-
-export const pathLede =
-  "Before consumer insights, a few years of learning how behavioural ideas hold up outside a classroom — and one year in operations that taught me what it means for a number to actually have to be right.";
 
 export const pathEntries = [
   {
@@ -108,22 +107,22 @@ export const education = [
     meta: "2022 — 2024 · 8/10",
     thesis:
       "Thesis: \"How Price Transparency Shapes Fairness, and How Fairness Drives Consumer Behaviour\"",
-    /** plotted on the time axis at year resolution (the years stated in `meta`) */
-    years: [2022, 2024] as [number, number],
+    /** approximate months, used only to draw the bar on the time axis; `meta` is what's displayed */
+    plot: { from: "2022-09", to: "2024-08" },
   },
   {
     degree: "Exchange Program",
     school: "Baldwin Wallace University, USA",
     meta: "Spring 2020 · 9/10",
     thesis: null,
-    years: null,
+    plot: { from: "2020-01", to: "2020-05" },
   },
   {
     degree: "BCom Finance and Investment",
     school: "Christ University, Bangalore, India",
     meta: "2018 — 2021 · 9/10",
     thesis: null,
-    years: null,
+    plot: { from: "2018-07", to: "2021-06" },
   },
 ];
 
@@ -186,13 +185,16 @@ export const connect = {
    ║  Nothing below this line is quoted from the original site.            ║
    ╚═══════════════════════════════════════════════════════════════════════╝ */
 
-/** Hero. Rewritten; edit freely. */
+/** Hero. Rewritten; edit freely. `lead` is the big line; `lines` follow as short paragraphs. */
 export const hero = {
   eyebrow: "i. an opening note",
-  headline:
-    "I'm a curious person. I study why people buy, believe and behave the way they do, and I keep experimenting with new ways to ask.",
+  lead: "I'm a curious person.",
+  lines: [
+    "I study why people buy, believe and behave the way they do.",
+    "And I keep finding new ways to ask.",
+  ],
   sub:
-    "Consumer and market insights researcher. Behavioural economist by training. Constant learner by temperament: if there is a new method, tool or idea, I want to try it. Most weeks that means qualitative and quantitative research for a D2C beauty brand, plus small experiments, built on my own, in how research itself could work better.",
+    "Consumer insights researcher. Behavioural economist by training. Learner by habit: new method, new tool, new idea, I'll try it. Day job: qual and quant research for a D2C beauty brand. Side quests: small experiments in doing research better.",
   facts: heroFacts,
 };
 
@@ -301,8 +303,83 @@ export const noticeHighlights = [
   { phrase: "still working out", code: "OPEN" },
 ];
 
+/**
+ * Highlights for the QUESTION statements: index = role.points index.
+ * Same rules as noticeHighlights (exact phrase, or it is skipped).
+ */
+export const roleHighlights: { phrase: string; code: string }[][] = [
+  [
+    { phrase: "10+ category D2C beauty portfolio", code: "SCALE" },
+    { phrase: "post-launch iteration", code: "LOOP" },
+  ],
+  [
+    { phrase: "IDIs, FGDs, in-home visits", code: "QUAL" },
+    { phrase: "turn human understanding into product concepts", code: "SYNTHESIS" },
+  ],
+  [
+    { phrase: "40+ quantitative studies a year", code: "QUANT" },
+    { phrase: "custom-built approaches when the question demands it", code: "CUSTOM" },
+  ],
+  [
+    { phrase: "head-to-head testing against category leaders", code: "GATE" },
+    { phrase: "only launched after beating the incumbent", code: "EVIDENCE" },
+  ],
+  [
+    { phrase: "commercial trade-offs for leadership rather than just data", code: "JUDGEMENT" },
+    { phrase: "no significant lift", code: "HONESTY" },
+  ],
+  [
+    { phrase: "monthly voice-of-consumer briefing", code: "CADENCE" },
+    { phrase: "weekly working session with the CMO", code: "CADENCE" },
+  ],
+  [
+    { phrase: "out of curiosity", code: "CURIOSITY" },
+    { phrase: "ongoing experiments with emerging techniques", code: "EXPERIMENT" },
+  ],
+];
+
+/** Highlights for the earlier-role summaries: index = pathEntries index. */
+export const pathHighlights: { phrase: string; code: string }[][] = [
+  [
+    { phrase: "across 7 regions", code: "SCALE" },
+    { phrase: "Projected a 150% engagement lift", code: "RESULT" },
+  ],
+  [
+    { phrase: "gamified app interventions", code: "NUDGE" },
+    { phrase: "A/B testing framework", code: "METHOD" },
+  ],
+  [
+    { phrase: "randomised controlled trial (n=78)", code: "METHOD" },
+    { phrase: "improving optimal scheme selection by 35%", code: "RESULT" },
+  ],
+  [
+    { phrase: "99% accuracy", code: "RIGOUR" },
+    { phrase: "saving 250+ hours a year", code: "AUTOMATION" },
+  ],
+];
+
 /** Plain-language meaning of each margin code, shown on hover or tap. */
 export const codeGloss: Record<string, string> = {
+  SCALE: "how much ground the work covers",
+  LOOP: "the study doesn't end at launch",
+  QUAL: "talking to people and watching them, not just counting them",
+  QUANT: "counting them too, properly",
+  SYNTHESIS: "many conversations, one clear idea",
+  CUSTOM: "when the standard method doesn't fit the question, make one",
+  GATE: "nothing ships until it wins a fair fight",
+  EVIDENCE: "the decision followed the data, not the other way round",
+  JUDGEMENT: "a finding is only useful once it becomes a trade-off",
+  HONESTY: "saying 'no difference' when there is no difference",
+  CADENCE: "a fixed rhythm keeps the consumer in the room",
+  CURIOSITY: "no one asked for this; I wanted to know",
+  EXPERIMENT: "try it small, see what happens",
+  RESULT: "what actually changed",
+  NUDGE: "small changes to how a choice is presented",
+  RIGOUR: "the number has to be right, every time",
+  AUTOMATION: "let the machine do the boring part",
+  ITCH: "the thing that bothered me enough to start",
+  BUILD: "what I actually made",
+  CAVEAT: "what this is not",
   METHOD: "how the evidence was gathered",
   AUDIENCE: "who the work is for",
   SCOPE: "how much of a study I own, start to finish",
@@ -435,12 +512,21 @@ export const questionLabels = {
   panelTitle: "the role, plotted",
   panelHint: "every mark here is a number or a name taken from the statements alongside",
   provenanceTitle: "where the rigour came from",
-  provenanceNote: "the MSc is plotted by year and the roles by month; everything else is on file below",
   instruments: "instruments",
   onRecord: "on the record",
   training: "training",
   earlierPath: "earlier path",
+  now: "now",
 };
+
+/** The story under "where the rigour came from". Edit freely. */
+export const pathLede =
+  "A year in investment banking made me fluent with numbers. Then I wanted the why behind them. That took me to Erasmus University Rotterdam for a master's in behavioural economics, and to consulting projects across the Netherlands while I was there. Now I run consumer research, and the numbers still have to be right.";
+export const pathLedeHighlights = [
+  { phrase: "fluent with numbers", code: "RIGOUR" },
+  { phrase: "the why behind them", code: "CURIOSITY" },
+  { phrase: "behavioural economics", code: "TRAINING" },
+];
 
 /* ── TEST bench ─────────────────────────────────────────────────────────── */
 
@@ -456,6 +542,8 @@ export type Bench = {
   result: string;
   /** small caption under the interactive miniature */
   caption: string;
+  /** phrases inside why/did/result that get the highlighter + a tag */
+  highlights: { phrase: string; code: string }[];
 };
 
 export const benchLabels = {
@@ -476,6 +564,11 @@ export const bench: Bench[] = [
     did: "An automated dashboard that pulls incoming customer feedback through an API and analyses it as it arrives, instead of waiting for the next report.",
     result: "Feedback gets read the day it comes in rather than the month the report is due.",
     caption: "Switch between reading feedback as it arrives and reading it once a quarter.",
+    highlights: [
+      { phrase: "I wanted the loop to be shorter", code: "ITCH" },
+      { phrase: "analyses it as it arrives", code: "BUILD" },
+      { phrase: "read the day it comes in", code: "RESULT" },
+    ],
   },
   {
     id: "wheel",
@@ -486,6 +579,11 @@ export const bench: Bench[] = [
     did: "Designed the interaction myself: a colour wheel respondents can move around freely, with each pick written straight into Google Sheets. The interaction design and the data pipeline both had to be worked out from scratch.",
     result: "Respondents could show the colour they meant rather than the nearest swatch, and the data was ready to analyse as it landed.",
     caption: "Drag on the wheel. Each pick lands in the sheet row below, the way a respondent's would.",
+    highlights: [
+      { phrase: "could only offer a fixed list of swatches", code: "ITCH" },
+      { phrase: "a colour wheel respondents can move around freely", code: "BUILD" },
+      { phrase: "show the colour they meant", code: "RESULT" },
+    ],
   },
   {
     id: "delight",
@@ -496,6 +594,11 @@ export const bench: Bench[] = [
     did: "Explored what happens when a survey feels less like research and more like a small, enjoyable interaction: animation, light gamification, confetti when you finish.",
     result: "A set of interaction patterns for holding attention when nobody is being paid to give it.",
     caption: "Three questions about this page. Try finishing one.",
+    highlights: [
+      { phrase: "lose patience quickly", code: "ITCH" },
+      { phrase: "confetti when you finish", code: "BUILD" },
+      { phrase: "holding attention when nobody is being paid to give it", code: "RESULT" },
+    ],
   },
   {
     id: "screen",
@@ -506,6 +609,11 @@ export const bench: Bench[] = [
     did: "Primed an LLM with a consumer persona, demographics and context included, and had it respond to early-stage concepts. Then compared those responses with real respondent data.",
     result: "The gap was smaller than expected. Small enough to use for early screening, say fifteen concepts down to five, before spending fieldwork budget on the ones that survive. Not a replacement for real qualitative research, and not meant as one.",
     caption: "Run the screen. Fifteen abstract concepts, two readings of each, five survive.",
+    highlights: [
+      { phrase: "Testing fifteen ideas properly costs the same as testing five", code: "ITCH" },
+      { phrase: "Primed an LLM with a consumer persona", code: "BUILD" },
+      { phrase: "Not a replacement for real qualitative research", code: "CAVEAT" },
+    ],
   },
   {
     id: "platform",
@@ -516,6 +624,7 @@ export const bench: Bench[] = [
     did: "Building a survey platform from scratch. In progress.",
     result: "",
     caption: "In progress. More when there is more to show.",
+    highlights: [{ phrase: "from scratch", code: "BUILD" }],
   },
 ];
 
@@ -569,7 +678,12 @@ export const wheelLabels = {
 
 /** Connect. Edit freely. */
 export const connectText =
-  "Always glad to talk about consumer behaviour, behavioural economics, or honestly anything under the sun. I like to talk, and I like being surprised by what people know.";
+  "I like people, and I like understanding them. So I'm always up for a conversation: consumer behaviour, behavioural economics, AI, why anyone does anything, or plain banter. If you have a half-formed idea, even better. Say hi.";
+export const connectHighlights = [
+  { phrase: "I like understanding them", code: "CURIOSITY" },
+  { phrase: "why anyone does anything", code: "MOTIVE" },
+  { phrase: "Say hi", code: "OPEN" },
+];
 
 /** Footer credit line. */
 export const colophon = "Designed and built by me.";

@@ -89,10 +89,23 @@ export function Hero() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                className="display text-[clamp(1.6rem,0.9rem+2.7vw,3.7rem)]"
+                className="display text-[clamp(2.4rem,1.4rem+4.2vw,5.6rem)]"
               >
-                {hero.headline}
+                {hero.lead}
               </motion.h1>
+              <div className="mt-5 space-y-2 md:mt-7">
+                {hero.lines.map((line, i) => (
+                  <motion.p
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.35 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                    className="display-tight m-0 max-w-[24ch] text-[clamp(1.2rem,0.9rem+1.3vw,2rem)] text-ink"
+                  >
+                    {line}
+                  </motion.p>
+                ))}
+              </div>
             </div>
             <motion.p
               initial={{ opacity: 0 }}
