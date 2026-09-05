@@ -90,14 +90,13 @@ export function Test() {
         Test
       </div>
       <StateBand state="test" tag="the bench" />
-      <div className="mx-auto max-w-[84rem] px-[var(--gutter)] py-14 md:py-20 lg:py-24">
+      <div className="mx-auto max-w-[84rem] px-[var(--gutter)] pb-6 pt-14 md:pb-8 md:pt-20 lg:pt-24">
         <p className="italic-note measure-wide mb-12 text-[clamp(1.1rem,1rem+0.5vw,1.4rem)] leading-[1.45] text-pencil">
           {benchLabels.lede}
         </p>
         {bench.map((b, i) => (
           <Entry key={b.id} entry={b} index={i} />
         ))}
-        <div className="rule" />
       </div>
     </section>
   );

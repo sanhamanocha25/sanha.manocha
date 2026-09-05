@@ -25,7 +25,7 @@
 
 export const meta = {
   name: "Sanha Manocha",
-  title: "Sanha Manocha — Field notes on people, prices, and product",
+  title: "Sanha Manocha · Consumer insights, curious learner",
   description:
     "Consumer & market insights researcher, behavioural economist, and part-time builder of small useful tools. Field notes from Sanha Manocha.",
   siteUrl: "https://sanhamanocha.com",
@@ -148,7 +148,7 @@ export const toolkit = [
   },
   {
     label: "tools",
-    items: ["Tally", "Qualtrics", "SQL", "Power BI", "Tableau", "Excel", "Claude Code", "Atlas.ti", "PowerPoint"],
+    items: ["Tally", "Qualtrics", "SQL", "Power BI", "Tableau", "Excel", "Atlas.ti", "PowerPoint"],
   },
   {
     label: "languages",
@@ -192,7 +192,7 @@ export const hero = {
   headline:
     "I'm a curious person. I study why people buy, believe and behave the way they do, and I keep experimenting with new ways to ask.",
   sub:
-    "Consumer and market insights researcher. Behavioural economist by training. Constant learner by temperament: if there is a new method, tool or idea, I want to try it. Most weeks that means qualitative and quantitative research for a D2C beauty brand, plus small experiments, built with Claude Code, in how research itself could work better.",
+    "Consumer and market insights researcher. Behavioural economist by training. Constant learner by temperament: if there is a new method, tool or idea, I want to try it. Most weeks that means qualitative and quantitative research for a D2C beauty brand, plus small experiments, built on my own, in how research itself could work better.",
   facts: heroFacts,
 };
 
@@ -213,7 +213,7 @@ export const heroSummary: { code: "notice" | "question" | "test"; text: string }
   },
   {
     code: "test",
-    text: "And when the right tool doesn't exist, I try something: [[a colour wheel instead of a swatch list]], [[feedback read as it arrives]], [[an LLM primed with a consumer persona]], [[a survey platform, from scratch]]. Most of it built with Claude Code.",
+    text: "And when the right tool doesn't exist, I try something: [[a colour wheel instead of a swatch list]], [[feedback read as it arrives]], [[an LLM primed with a consumer persona]], [[a survey platform, from scratch]]. All of it built single-handedly.",
   },
 ];
 
@@ -264,7 +264,7 @@ export const states = {
   test: {
     word: "Test",
     number: "03",
-    gloss: "And when the right tool doesn't exist, I build a rough one with Claude Code and try it. That part is fun.",
+    gloss: "And when the right tool doesn't exist, I build a rough one myself and try it. That part is fun.",
   },
 } as const;
 
@@ -272,7 +272,6 @@ export const nav = [
   { label: "Notice", href: "/#notice" },
   { label: "Question", href: "/#question" },
   { label: "Test", href: "/#test" },
-  { label: "Field notes", href: "/notes" },
   { label: "Connect", href: "/#connect" },
 ];
 
@@ -463,7 +462,7 @@ export const benchLabels = {
   why: "why",
   did: "what I did",
   result: "what came of it",
-  lede: "Small experiments, built with Claude Code. Every one started the same way: I got curious about whether something could work, and the tool I needed either didn't exist or was too slow.",
+  lede: "Small experiments, all built single-handedly. Every one started the same way: I got curious about whether something could work, and the tool I needed either didn't exist or was too slow.",
   illustration: "Illustration with abstract marks. Not real data.",
 };
 
@@ -573,7 +572,7 @@ export const connectText =
   "Always glad to talk about consumer behaviour, behavioural economics, or honestly anything under the sun. I like to talk, and I like being surprised by what people know.";
 
 /** Footer credit line. */
-export const colophon = "Designed and built by me, with Claude Code.";
+export const colophon = "Designed and built by me.";
 
 /* ── Field notes ─────────────────────────────────────────────────────────── */
 

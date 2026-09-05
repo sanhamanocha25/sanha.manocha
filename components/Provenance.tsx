@@ -63,12 +63,13 @@ function useLanes(items: Plotted[]) {
 function TimeAxis({ reduced }: { reduced: boolean }) {
   const items = usePlotted();
   const rows = useMemo(() => [...items].sort((a, b) => a.a - b.a || b.b - a.b), [items]);
-  const min = Math.min(...items.map((i) => i.a));
-  const max = Math.max(...items.map((i) => i.b));
+  const dataMax = Math.max(...items.map((i) => i.b));
+  const min = Math.min(...items.map((i) => i.a)) - 1;
+  const max = dataMax + 3;
   const span = max + 1 - min;
   const pct = (m: number) => ((m - min) / span) * 100;
   const years: number[] = [];
-  for (let m = min; m <= max; m++) if (m % 12 === 0) years.push(m);
+  for (let m = min; m <= dataMax; m++) if (m % 12 === 0) years.push(m);
 
   const gridLines = years.map((m) => (
     <span key={m} aria-hidden className="absolute bottom-0 top-0 border-l border-dashed border-pencil-light" style={{ left: `${pct(m)}%` }} />
