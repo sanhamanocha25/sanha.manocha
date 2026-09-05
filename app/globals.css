@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+@theme {
+  --color-paper: #f1f2ed;
+  --color-paper-deep: #e6e8e1;
+  --color-grid: #d6dad1;
+  --color-ink: #15171b;
+  --color-pencil: #6f756d;
+  --color-pencil-light: #9aa097;
+  --color-marker: #dcff4f;
+  --color-marker-deep: #c4ea2c;
+  --color-redpen: #d9412b;
+
+  --font-serif: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --breakpoint-xs: 30rem;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+:root {
+  --grid-size: 32px;
+  --gutter: clamp(20px, 4vw, 48px);
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-paper);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 30, "WONK" 0;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-marker);
+  color: var(--color-ink);
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+.focus-marker:focus-visible {
+  outline: none;
+  background: var(--color-marker);
+  box-shadow: 0 0 0 3px var(--color-marker);
+}
+
+/* Graph-paper ground. Two layers: fine grid + a heavier line every 4 cells. */
+.paper-grid {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-grid) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-grid) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size:
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size),
+    calc(var(--grid-size) * 4) calc(var(--grid-size) * 4),
+    calc(var(--grid-size) * 4) calc(var(--grid-size) * 4);
+  background-position: 0 0;
+}
+
+/* ── Type utilities ────────────────────────────────────────────────────── */
+.display {
+  font-family: var(--font-serif);
+  font-weight: 350;
+  font-variation-settings: "SOFT" 60, "WONK" 1;
+  letter-spacing: -0.028em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+.display-tight {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "zero" 1, "ss02" 1;
+  letter-spacing: 0.01em;
+}
+.body-serif {
+  font-family: var(--font-serif);
+  font-variation-settings: "SOFT" 30, "WONK" 0;
+}
+.italic-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-variation-settings: "SOFT" 50, "WONK" 1;
+}
+.measure { max-width: 38rem; }
+.measure-wide { max-width: 46rem; }
+
+/* Highlighter mark drawn as a background that grows; scrubbed by GSAP. */
+mark.hl {
+  background: none;
+  color: inherit;
+  background-image: linear-gradient(var(--color-marker), var(--color-marker));
+  background-repeat: no-repeat;
+  background-size: var(--hl, 0%) 62%;
+  background-position: 0 78%;
+  padding: 0 0.08em;
+  margin: 0 -0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: none;
+}
+
+/* Ruled lines */
+.rule { border-top: 1px solid var(--color-ink); }
+.rule-soft { border-top: 1px solid var(--color-grid); }
+.rule-dashed { border-top: 1px dashed color-mix(in srgb, var(--color-ink) 45%, transparent); }
+
+/* Hide scrollbars on the nav strip */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Stamp cadence (used by the codebook rows) */
+@keyframes stamp {
+  0%   { opacity: 0; transform: translateX(-6px); }
+  60%  { opacity: 0; transform: translateX(-6px); }
+  61%  { opacity: 1; transform: translateX(0); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Reduced motion — belt and braces on top of MotionConfig / GSAP checks */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  mark.hl { --hl: 100%; }
+}
+
+/* Lens cursor hint on specimen cards (hover devices only) */
+@media (hover: hover) and (pointer: fine) {
+  .lens-card { cursor: none; }
+}
