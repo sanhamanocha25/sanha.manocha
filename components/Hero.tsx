@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { hero, heroExtras, heroNote, heroSummary } from "@/content/site";
+import { hero, heroExtras, heroNote, heroPersonal, heroSummary } from "@/content/site";
 import { useMediaQuery, usePrefersReducedMotion } from "@/lib/motion";
 import { useFieldCanvas } from "@/components/useFieldCanvas";
 
@@ -89,23 +89,10 @@ export function Hero() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                className="display text-[clamp(2.4rem,1.4rem+4.2vw,5.6rem)]"
+                className="display text-[clamp(1.7rem,0.9rem+2.8vw,3.8rem)]"
               >
-                {hero.lead}
+                {hero.headline}
               </motion.h1>
-              <div className="mt-5 space-y-2 md:mt-7">
-                {hero.lines.map((line, i) => (
-                  <motion.p
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.35 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-                    className="display-tight m-0 max-w-[24ch] text-[clamp(1.2rem,0.9rem+1.3vw,2rem)] text-ink"
-                  >
-                    {line}
-                  </motion.p>
-                ))}
-              </div>
             </div>
             <motion.p
               initial={{ opacity: 0 }}
@@ -125,21 +112,25 @@ export function Hero() {
           aria-live="off"
         >
           <p className="hero-words mono mb-3 text-[0.72rem] text-pencil">{heroNote}</p>
-          {sentences.map((s, i) => (
-            <p key={i} className="body-serif m-0 mb-1.5 text-[0.92rem] leading-[1.75] md:mb-2 md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">
-              {s.pieces.map((p, j) =>
-                p.tag ? (
-                  <mark key={j} className="frag" data-frag={p.text} data-code={s.code}>
-                    {p.text}
-                  </mark>
-                ) : (
-                  <span key={j} className="hero-words">
-                    {p.text}
-                  </span>
-                ),
-              )}
-            </p>
-          ))}
+          <p className="hero-words body-serif m-0 mb-2 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">{heroPersonal}</p>
+          <p className="body-serif m-0 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">
+            {sentences.map((s, i) => (
+              <span key={i}>
+                {i > 0 ? <span className="hero-words"> </span> : null}
+                {s.pieces.map((p, j) =>
+                  p.tag ? (
+                    <mark key={j} className="frag" data-frag={p.text} data-code={s.code}>
+                      {p.text}
+                    </mark>
+                  ) : (
+                    <span key={j} className="hero-words">
+                      {p.text}
+                    </span>
+                  ),
+                )}
+              </span>
+            ))}
+          </p>
         </div>
 
         <p ref={statusRef} aria-live="off" className="mono pointer-events-none absolute bottom-4 left-[var(--gutter)] right-[var(--gutter)] z-10 truncate text-[0.72rem] text-pencil" />

@@ -304,7 +304,10 @@ export function useFieldCanvas({ canvasRef, hostRef, headlineRef, summaryRef, st
 
       const total = items.length;
       const kept = items.filter((i) => i.keep).length;
-      if (swapped) setStatus(`coded · notice ×${counts.notice} · question ×${counts.question} · test ×${counts.test} · ${total - kept} set aside`);
+      if (swapped) {
+        const parts = CODE_ORDER.filter((c) => counts[c] > 0).map((c) => `${c} ×${counts[c]}`);
+        setStatus(`coded · ${parts.join(" · ")} · ${total - kept} set aside`);
+      }
       else if (raw > 0.05) setStatus(`sorting ${total} fragments · ${Math.round(raw * 100)}%`);
       else setStatus(`field · ${total} fragments${canHover ? " · move the cursor to read them" : ""}`);
     };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { bioParagraphs, codeGloss, currentlyCurious, noticeHighlights, whereThisLeads } from "@/content/site";
+import { bioParagraphs, codeGloss, currentlyCurious, noticeHighlights } from "@/content/site";
 import { StateBand } from "@/components/StateBand";
 import { Sheet } from "@/components/Sheet";
 import { Gloss } from "@/components/Gloss";
@@ -10,7 +10,7 @@ import { Coded } from "@/components/Coded";
 /** NOTICE: the bio as a transcript being coded, with the codebook in the margin. */
 export function Notice() {
   const [activeCodes, setActiveCodes] = useState<Set<string>>(() => new Set());
-  const paragraphs = useMemo(() => [...bioParagraphs, whereThisLeads], []);
+  const paragraphs = useMemo(() => [...bioParagraphs], []);
   const codes = useMemo(() => {
     const seen = new Set<string>();
     const list: string[] = [];
