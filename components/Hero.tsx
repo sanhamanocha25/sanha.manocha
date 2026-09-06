@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { hero, heroExtras, heroNote, heroPersonal, heroSummary } from "@/content/site";
-import { useMediaQuery, usePrefersReducedMotion } from "@/lib/motion";
+import { usePrefersReducedMotion } from "@/lib/motion";
 import { useFieldCanvas } from "@/components/useFieldCanvas";
 
 type Piece = { text: string; tag: boolean };
@@ -63,24 +63,20 @@ export function Hero() {
   useFieldCanvas({ canvasRef, hostRef: stickyRef, headlineRef, summaryRef, statusRef, progressRef, fragments, extras: heroExtras, reduced });
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const y = useTransform(scrollYProgress, [0, 0.7], [0, reduced ? 0 : -24]);
-  // On small screens the summary needs the room, so the headline hands over as the sort completes.
-  const small = useMediaQuery("(max-width: 767px)");
-  const headlineOpacity = useTransform(scrollYProgress, (v) =>
-    small && !reduced ? 1 - Math.min(1, Math.max(0, (v - 0.2) / 0.3)) : 1,
-  );
+  const y = useTransform(scrollYProgress, [0, 0.7], [0, 0]);
+
 
   return (
-    <section ref={sectionRef} aria-label="Introduction" className="relative" style={{ height: reduced ? "100svh" : "175svh" }}>
+    <section ref={sectionRef} aria-label="Introduction" className="relative" style={{ height: reduced ? "100svh" : "150svh" }}>
       <div
         ref={stickyRef}
-        className="hero-host sticky top-0 h-[100svh] overflow-hidden"
+        className="hero-host sticky top-12 h-[calc(100svh-3rem)] overflow-hidden"
         style={reduced ? ({ "--words": 1, "--marks": 1 } as React.CSSProperties) : undefined}
       >
         <canvas ref={canvasRef} aria-hidden className="absolute inset-0 h-full w-full" />
 
-        <div className="relative z-10 mx-auto max-w-[84rem] px-[var(--gutter)] pt-[clamp(3rem,8vh,6.5rem)]">
-          <motion.div ref={headlineRef} style={{ y, opacity: headlineOpacity }} className="grid gap-x-12 gap-y-6 lg:grid-cols-12 lg:items-end">
+        <div className="relative z-10 mx-auto max-w-[84rem] px-[var(--gutter)] pt-[clamp(2.5rem,7vh,6rem)]">
+          <motion.div ref={headlineRef} style={{ y }} className="grid gap-x-12 gap-y-6 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }} className="italic-note mb-4 text-[0.95rem] text-pencil md:mb-6">
                 {hero.eyebrow}
@@ -89,7 +85,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                className="display text-[clamp(1.7rem,0.9rem+2.8vw,3.8rem)]"
+                className="display text-[clamp(1.55rem,0.9rem+2.8vw,3.8rem)]"
               >
                 {hero.headline}
               </motion.h1>
@@ -103,34 +99,30 @@ export function Hero() {
               {hero.sub}
             </motion.p>
           </motion.div>
-        </div>
 
-        {/* The written summary the fragments fly into */}
-        <div
-          ref={summaryRef}
-          className="hero-summary absolute bottom-12 left-[var(--gutter)] right-[var(--gutter)] z-10 mx-auto max-w-[84rem] md:bottom-14"
-          aria-live="off"
-        >
-          <p className="hero-words mono mb-3 text-[0.72rem] text-pencil">{heroNote}</p>
-          <p className="hero-words body-serif m-0 mb-2 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">{heroPersonal}</p>
-          <p className="body-serif m-0 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">
-            {sentences.map((s, i) => (
-              <span key={i}>
-                {i > 0 ? <span className="hero-words"> </span> : null}
-                {s.pieces.map((p, j) =>
-                  p.tag ? (
-                    <mark key={j} className="frag" data-frag={p.text} data-code={s.code}>
-                      {p.text}
-                    </mark>
-                  ) : (
-                    <span key={j} className="hero-words">
-                      {p.text}
-                    </span>
-                  ),
-                )}
-              </span>
-            ))}
-          </p>
+          {/* The written summary the fragments fly into, in flow under the headline */}
+          <div ref={summaryRef} className="hero-summary relative z-10 mt-12 max-w-[60rem] md:mt-16 lg:mt-20" aria-live="off">
+            <p className="hero-words mono mb-3 text-[0.72rem] text-pencil">{heroNote}</p>
+            <p className="hero-words body-serif m-0 mb-2 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">{heroPersonal}</p>
+            <p className="body-serif m-0 text-[0.95rem] leading-[1.75] md:text-[1.05rem] md:leading-[1.9] lg:text-[1.12rem]">
+              {sentences.map((s, i) => (
+                <span key={i}>
+                  {i > 0 ? <span className="hero-words"> </span> : null}
+                  {s.pieces.map((p, j) =>
+                    p.tag ? (
+                      <mark key={j} className="frag" data-frag={p.text} data-code={s.code}>
+                        {p.text}
+                      </mark>
+                    ) : (
+                      <span key={j} className="hero-words">
+                        {p.text}
+                      </span>
+                    ),
+                  )}
+                </span>
+              ))}
+            </p>
+          </div>
         </div>
 
         <p ref={statusRef} aria-live="off" className="mono pointer-events-none absolute bottom-4 left-[var(--gutter)] right-[var(--gutter)] z-10 truncate text-[0.72rem] text-pencil" />

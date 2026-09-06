@@ -31,7 +31,7 @@ export function Masthead() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink bg-paper/95 backdrop-blur-[2px]">
-      <div className="mx-auto flex max-w-[84rem] items-center justify-between gap-6 px-[var(--gutter)] py-3">
+      <div className="mx-auto flex h-12 max-w-[84rem] items-center justify-between gap-6 px-[var(--gutter)]">
         <Link href="/" className="display-tight shrink-0 whitespace-nowrap text-[1.05rem] no-underline" aria-label={`${meta.name} — home`}>
           {meta.name}
         </Link>
